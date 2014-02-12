@@ -169,26 +169,15 @@ public class XMPPComponent extends AbstractComponent implements PacketSender  {
 		send(packet);
 	}
 	
+	public void process() throws ComponentException {
+		process(false);
+	}
+	
 	/**
 	 * @throws ComponentException 
 	 * 
 	 */
-	public void process() throws ComponentException {
-		
-		LOGGER.debug("Initializing XMPP component...");
-		
-		ExternalComponentManager componentManager = new ExternalComponentManager(server, port);
-		componentManager.setSecretKey(jid, password);
-		
-		try {
-			componentManager.addComponent(jid, this);
-		} catch (ComponentException e) {
-			LOGGER.fatal("Component could not be started.", e);
-			throw e;
-		}
-		
-		LOGGER.debug("XMPP component initialized.");
-		
+	public void process(boolean block) throws ComponentException {
 		Runnable componentRunnable = new Runnable() {
 			@Override
 			public void run() {
@@ -202,8 +191,28 @@ public class XMPPComponent extends AbstractComponent implements PacketSender  {
 			}
 		};
 		
-		Thread t = new Thread(componentRunnable, "xmpp-hanging-thread");
-		t.start();
+		Thread t = new Thread(componentRunnable, "jamppa-component-hanging-thread");
+		if (block) {
+			t.run();
+		} else {
+			t.start();
+		}
+	}
+
+	public void connect() throws ComponentException {
+		LOGGER.debug("Initializing XMPP component...");
+		
+		ExternalComponentManager componentManager = new ExternalComponentManager(server, port);
+		componentManager.setSecretKey(jid, password);
+		
+		try {
+			componentManager.addComponent(jid, this);
+		} catch (ComponentException e) {
+			LOGGER.fatal("Component could not be started.", e);
+			throw e;
+		}
+		
+		LOGGER.debug("XMPP component initialized.");
 	}
 	
 	/* (non-Javadoc)
