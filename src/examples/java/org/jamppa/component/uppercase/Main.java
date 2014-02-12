@@ -7,7 +7,7 @@ import org.xmpp.packet.IQ;
 public class Main {
 
 	public static void main(String[] args) {
-		new UppercaseComponent("uppercase.example.com", "tellnoone", "localhost", 5347);
+		new UppercaseComponent("uppercase.example.com", "tellnoone", "localhost", 5347).process();
 	}
 	
 	private static class UppercaseComponent extends XMPPComponent {
