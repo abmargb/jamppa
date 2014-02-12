@@ -20,17 +20,20 @@
 
 package org.jivesoftware.whack;
 
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
-import org.xmpp.component.*;
+import org.xmpp.component.Component;
+import org.xmpp.component.ComponentException;
+import org.xmpp.component.ComponentManager;
+import org.xmpp.component.ComponentManagerFactory;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.JID;
 import org.xmpp.packet.Packet;
-
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.prefs.Preferences;
 
 /**
  * Implementation of the ComponentManager interface for external components.
@@ -77,9 +80,6 @@ public class ExternalComponentManager implements ComponentManager {
      */
     private Map<String, Boolean> allowMultiple = new Hashtable<String,Boolean>();
 
-    Preferences preferences = Preferences.userRoot();
-    private String preferencesPrefix;
-
     /**
      * Keeps a map that associates a domain with the external component thas is handling the domain.
      */
@@ -91,6 +91,8 @@ public class ExternalComponentManager implements ComponentManager {
 
     private static final Logger LOG = Logger.getLogger(ExternalComponent.class);
 
+    private Properties properties = new Properties();
+    
     /**
      * Constructs a new ExternalComponentManager that will make connections
      * to the specified XMPP server on the default port (5222).
@@ -265,20 +267,6 @@ public class ExternalComponentManager implements ComponentManager {
         sendPacket(component, packet);
     }
 
-    public String getProperty(String name) {
-        return preferences.get(getPreferencesPrefix() + name, null);
-    }
-
-    public void setProperty(String name, String value) {
-        preferences.put(getPreferencesPrefix() + name, value);
-    }
-
-    private String getPreferencesPrefix() {
-        if (preferencesPrefix == null) {
-            preferencesPrefix = "whack." + domain + ".";
-        }
-        return preferencesPrefix;
-    }
 
     /**
      * Sets the domain of the XMPP server. The domain may or may not match the host. The domain
@@ -336,5 +324,15 @@ public class ExternalComponentManager implements ComponentManager {
 			org.xmpp.component.IQResultListener listener)
 			throws ComponentException {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public String getProperty(String name) {
+		return properties.getProperty(name);
+	}
+
+	@Override
+	public void setProperty(String name, String value) {
+		properties.setProperty(name, value);
 	}
 }
