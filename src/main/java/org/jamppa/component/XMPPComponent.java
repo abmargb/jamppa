@@ -170,9 +170,10 @@ public class XMPPComponent extends AbstractComponent implements PacketSender  {
 	}
 	
 	/**
+	 * @throws ComponentException 
 	 * 
 	 */
-	public void process() {
+	public void process() throws ComponentException {
 		
 		LOGGER.debug("Initializing XMPP component...");
 		
@@ -183,6 +184,7 @@ public class XMPPComponent extends AbstractComponent implements PacketSender  {
 			componentManager.addComponent(jid, this);
 		} catch (ComponentException e) {
 			LOGGER.fatal("Component could not be started.", e);
+			throw e;
 		}
 		
 		LOGGER.debug("XMPP component initialized.");

@@ -2,11 +2,12 @@ package org.jamppa.component.uppercase;
 
 import org.jamppa.component.XMPPComponent;
 import org.jamppa.component.handler.AbstractQueryHandler;
+import org.xmpp.component.ComponentException;
 import org.xmpp.packet.IQ;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ComponentException {
 		new UppercaseComponent("uppercase.example.com", "tellnoone", "localhost", 5347).process();
 	}
 	
