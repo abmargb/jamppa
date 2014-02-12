@@ -15,8 +15,6 @@
  */
 package org.jamppa.component.handler;
 
-import java.util.Properties;
-
 import org.apache.log4j.Logger;
 import org.jamppa.component.PacketSender;
 
@@ -31,7 +29,6 @@ public abstract class AbstractQueryHandler implements QueryHandler {
 
 	private final String namespace;
 	private final Logger logger;
-	private Properties properties;
 	private PacketSender packetSender;
 	
 	/**
@@ -39,6 +36,9 @@ public abstract class AbstractQueryHandler implements QueryHandler {
 	 * @param namespace
 	 */
 	public AbstractQueryHandler(String namespace) {
+		if (namespace == null) {
+			throw new IllegalArgumentException("Namespace cannot be null");
+		}
 		this.namespace = namespace;
 		this.logger = Logger.getLogger(getClass());
 	}
@@ -52,22 +52,11 @@ public abstract class AbstractQueryHandler implements QueryHandler {
 		return logger;
 	}
 	
-	protected Properties getProperties() {
-		return properties;
-	}
-	
 	/**
 	 * @return the packetSender
 	 */
 	public PacketSender getPacketSender() {
 		return packetSender;
-	}
-	
-	/**
-	 * @param properties the properties to set
-	 */
-	public void setProperties(Properties properties) {
-		this.properties = properties;
 	}
 	
 	/**
