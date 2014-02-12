@@ -16,7 +16,6 @@
 package org.jamppa.component.utils;
 
 import org.apache.log4j.Logger;
-import org.dom4j.Element;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.PacketError;
 import org.xmpp.packet.PacketError.Condition;
@@ -102,8 +101,4 @@ public class XMPPUtils {
 		return result;
 	}
 
-	public static void addInfo(String message, Element queryElement) {
-		Element messageEl = queryElement.addElement("info");
-		messageEl.setText(message);
-	}
 }
