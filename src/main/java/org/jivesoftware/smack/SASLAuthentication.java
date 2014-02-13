@@ -466,7 +466,7 @@ public class SASLAuthentication implements UserAuthentication {
         }
         // If the server replied with an error, throw an exception.
         else if (response.getType() == IQ.Type.error) {
-            throw new XMPPException(response.getError().toString());
+            throw new XMPPException(response.getError());
         }
         String userJID = response.getJid();
 
@@ -483,7 +483,7 @@ public class SASLAuthentication implements UserAuthentication {
             }
             // If the server replied with an error, throw an exception.
             else if (ack.getType() == IQ.Type.error) {
-                throw new XMPPException(ack.getError().toString());
+                throw new XMPPException(ack.getError());
             }
         }
         return userJID;

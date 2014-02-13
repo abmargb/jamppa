@@ -1,6 +1,7 @@
 package org.jamppa.client.uppercase;
 
 import org.jamppa.client.XMPPClient;
+import org.jamppa.client.plugin.xep0077.XEP0077;
 import org.jivesoftware.smack.XMPPException;
 import org.xmpp.component.ComponentException;
 import org.xmpp.packet.IQ;
@@ -11,8 +12,17 @@ public class Main {
 	public static void main(String[] args) throws XMPPException, ComponentException {
 		XMPPClient client = new XMPPClient("client@test.com", 
 				"password", "localhost", 5222);
+		
+		XEP0077 register = new XEP0077();
+		client.registerPlugin(register);
+		
 		client.connect();
-		client.register();
+		try {
+			register.createAccount("client@test.com", "password");
+		} catch (XMPPException e) {
+			e.printStackTrace();
+		}
+		
 		client.login();
 		client.process(false);
 		
@@ -25,5 +35,6 @@ public class Main {
 		
 		IQ response = (IQ) client.syncSend(iq);
 		System.out.println(response.toXML());
+		client.disconnect();
 	}
 }

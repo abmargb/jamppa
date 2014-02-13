@@ -26,11 +26,10 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.XPPPacketReader;
+import org.jamppa.client.plugin.Plugin;
 import org.jivesoftware.smack.Connection.ListenerWrapper;
 import org.jivesoftware.smack.packet.Authentication;
 import org.jivesoftware.smack.packet.Bind;
-import org.jivesoftware.smack.packet.Registration;
-import org.jivesoftware.smack.packet.XMPPError;
 import org.jivesoftware.smack.ping.packet.Ping;
 import org.jivesoftware.smack.sasl.SASLMechanism.Challenge;
 import org.jivesoftware.smack.sasl.SASLMechanism.Failure;
@@ -42,6 +41,8 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.Message;
 import org.xmpp.packet.Packet;
+import org.xmpp.packet.PacketError;
+import org.xmpp.packet.PacketError.Condition;
 import org.xmpp.packet.Presence;
 import org.xmpp.packet.Roster;
 
@@ -219,32 +220,9 @@ class PacketReader {
 				}
 				Packet packet = null;
 				LOGGER.debug("Processing packet " + doc.asXML());
-				String tag = doc.getName();
-				if ("message".equals(tag)) {
-					packet = new Message(doc);
-				} else if ("presence".equals(tag)) {
-					packet = new Presence(doc);
-				} else if ("iq".equals(tag)) {
-					packet = parseIQ(doc);
-				} else if ("error".equals(tag)) {
-					throw new XMPPException(PacketParserUtils.parseStreamError(doc));
-				} else if ("features".equals(tag)) {
-					parseFeatures(doc);
-				} else if ("proceed".equals(tag)) {
-					connection.proceedTLSReceived();
-					resetParser();
-				} else if ("failure".equals(tag)) {
-					parseFailure(doc);
-				} else if ("challenge".equals(tag)) {
-					parseChallenge(doc);
-				} else if ("success".equals(tag)) {
-					parseSuccess(doc);
-				} else if ("compressed".equals(tag)) {
-                    connection.startStreamCompression();
-                    resetParser();
-				} else {
-					throw new XmlPullParserException(
-							"Unknown packet type was read: " + tag);
+				packet = parseFromPlugins(doc, packet);
+				if (packet == null) {
+					packet = parseFromCore(doc);
 				}
 				if (packet != null) {
 					processPacket(packet);
@@ -256,6 +234,50 @@ class PacketReader {
             }
         }
     }
+
+	private Packet parseFromCore(Element doc)
+			throws XMPPException, IOException, XmlPullParserException,
+			Exception {
+		String tag = doc.getName();
+		Packet packet = null;
+		if ("message".equals(tag)) {
+			packet = new Message(doc);
+		} else if ("presence".equals(tag)) {
+			packet = new Presence(doc);
+		} else if ("iq".equals(tag)) {
+			packet = parseIQ(doc);
+		} else if ("error".equals(tag)) {
+			throw new XMPPException(PacketParserUtils.parseStreamError(doc));
+		} else if ("features".equals(tag)) {
+			parseFeatures(doc);
+		} else if ("proceed".equals(tag)) {
+			connection.proceedTLSReceived();
+			resetParser();
+		} else if ("failure".equals(tag)) {
+			parseFailure(doc);
+		} else if ("challenge".equals(tag)) {
+			parseChallenge(doc);
+		} else if ("success".equals(tag)) {
+			parseSuccess(doc);
+		} else if ("compressed".equals(tag)) {
+			connection.startStreamCompression();
+			resetParser();
+		} else {
+			throw new XmlPullParserException(
+					"Unknown packet type was read: " + tag);
+		}
+		return packet;
+	}
+
+	private Packet parseFromPlugins(Element doc, Packet packet) {
+		for (Plugin plugin : connection.getPlugins()) {
+			packet = plugin.parse(doc);
+			if (packet != null) {
+				break;
+			}
+		}
+		return packet;
+	}
 
 	private void parseChallenge(Element doc) throws IOException {
 		String challengeData = doc.getText();
@@ -300,9 +322,6 @@ class PacketReader {
 			}
 			if ("jabber:iq:auth".equals(query.getNamespaceURI())) {
 				return new Authentication(doc);
-			}
-			if ("jabber:iq:register".equals(query.getNamespaceURI())) {
-				return new Registration(doc);
 			}
 		}
 		
@@ -395,11 +414,9 @@ class PacketReader {
 					PacketParserUtils.parseCompressionMethods(compressionEl));
         }
 		
-		Element registerEl = doc.element("register");
-		if (registerEl != null && registerEl.getNamespace().getURI().equals(
-				"http://jabber.org/features/iq-register")) {
-			connection.getAccountManager().setSupportsAccountCreation(true);
-        }
+		for (Plugin plugin : connection.getPlugins()) {
+			plugin.checkSupport(doc);
+		}
 		
 		if (!connection.isSecureConnection()) {
 			if (!startTLSReceived && connection.getConfiguration().getSecurityMode() == 
@@ -407,7 +424,7 @@ class PacketReader {
 				throw new XMPPException(
 						"Server does not support security (TLS), "
 								+ "but security required by connection configuration.",
-						new XMPPError(XMPPError.Condition.forbidden));
+						new PacketError(Condition.forbidden));
 			}
 		}
 

@@ -291,7 +291,7 @@ public class UserRoster {
         }
         // If the server replied with an error, throw an exception.
         else if (response.getType() == IQ.Type.error) {
-            throw new XMPPException(response.getError().toString());
+            throw new XMPPException(response.getError());
         }
 
         // Create a presence subscription packet and send.
@@ -337,7 +337,7 @@ public class UserRoster {
         }
         // If the server replied with an error, throw an exception.
         else if (response.getType() == IQ.Type.error) {
-            throw new XMPPException(response.getError().toString());
+            throw new XMPPException(response.getError());
         }
     }
 

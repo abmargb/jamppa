@@ -1,11 +1,14 @@
 package org.jamppa;
 
+import java.util.concurrent.Semaphore;
+
 import org.apache.log4j.Logger;
 import org.xmpp.component.ComponentException;
 
 public class XMPPBase {
 
 	private static final Logger LOGGER = Logger.getLogger(XMPPBase.class);
+	private final Semaphore mutex = new Semaphore(0);
 	
 	public void process() {
 		process(false);
@@ -19,12 +22,10 @@ public class XMPPBase {
 		Runnable componentRunnable = new Runnable() {
 			@Override
 			public void run() {
-				while (true) {
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						LOGGER.fatal("Main loop.", e);
-					}
+				try {
+					mutex.acquire();
+				} catch (InterruptedException e) {
+					LOGGER.fatal("Main loop.", e);
 				}
 			}
 		};
@@ -38,4 +39,8 @@ public class XMPPBase {
 		}
 	}
 
+	public void disconnect() {
+		mutex.release();
+	}
+	
 }

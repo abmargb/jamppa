@@ -162,11 +162,6 @@ public abstract class Connection {
             new ConcurrentHashMap<PacketInterceptor, InterceptorWrapper>();
 
     /**
-     * The AccountManager allows creation and management of accounts on an XMPP server.
-     */
-    private AccountManager accountManager = null;
-
-    /**
      * The ChatManager keeps track of references to all current chats.
      */
     private ChatManager chatManager = null;
@@ -417,17 +412,6 @@ public abstract class Connection {
      */
     public abstract void sendPacket(Packet packet);
 
-    /**
-     * Returns an account manager instance for this connection.
-     * 
-     * @return an account manager for this connection.
-     */
-    public AccountManager getAccountManager() {
-        if (accountManager == null) {
-            accountManager = new AccountManager(this);
-        }
-        return accountManager;
-    }
 
     /**
      * Returns a chat manager instance for this connection. The ChatManager manages all incoming and

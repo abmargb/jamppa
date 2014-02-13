@@ -1,6 +1,7 @@
 package org.jamppa.client;
 
 import org.jamppa.XMPPBase;
+import org.jamppa.client.plugin.Plugin;
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.PacketListener;
 import org.jivesoftware.smack.XMPPConnection;
@@ -16,7 +17,8 @@ public class XMPPClient {
 	private JID jid;
 	private XMPPConnection connection;
 	private String password;
-
+	private XMPPBase base = new XMPPBase();
+	
 	public XMPPClient(String jid, String password, String host, int port) {
 		this.jid = new JID(jid);
 		this.password = password;
@@ -29,9 +31,13 @@ public class XMPPClient {
 		this.connection.connect();
 	}
 	
-	public void register() throws XMPPException {
-		this.connection.getAccountManager().createAccount(
-				jid.getNode(), password);
+	public void registerPlugin(Plugin plugin) throws XMPPException {
+		plugin.create(this);
+		this.connection.registerPlugin(plugin);
+	}
+	
+	public XMPPConnection getConnection() {
+		return connection;
 	}
 	
 	public void login() throws XMPPException {
@@ -39,11 +45,19 @@ public class XMPPClient {
 	}
 	
 	public void process() throws ComponentException {
-		new XMPPBase().process();
+		base.process();
 	}
 
 	public void process(boolean block) {
-		new XMPPBase().process(block);
+		base.process(block);
+	}
+	
+	public JID getJid() {
+		return jid;
+	}
+	
+	public String getPassword() {
+		return password;
 	}
 	
 	public void send(Packet packet) {
@@ -56,5 +70,10 @@ public class XMPPClient {
 	
 	public void on(PacketFilter filter, PacketListener callback) {
 		connection.addPacketListener(callback, filter);
+	}
+
+	public void disconnect() {
+		connection.disconnect();
+		base.disconnect();
 	}
 }

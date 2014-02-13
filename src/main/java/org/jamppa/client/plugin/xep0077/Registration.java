@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.jivesoftware.smack.packet;
+package org.jamppa.client.plugin.xep0077;
 
 import java.util.HashMap;
 import java.util.List;

@@ -191,7 +191,7 @@ public class RosterGroup {
             }
             // If the server replied with an error, throw an exception.
             else if (response.getType() == IQ.Type.error) {
-                throw new XMPPException(response.getError().toString());
+                throw new XMPPException(response.getError());
             }
         }
     }
@@ -235,7 +235,7 @@ public class RosterGroup {
             }
             // If the server replied with an error, throw an exception.
             else if (response.getType() == IQ.Type.error) {
-                throw new XMPPException(response.getError().toString());
+                throw new XMPPException(response.getError());
             }
         }
     }

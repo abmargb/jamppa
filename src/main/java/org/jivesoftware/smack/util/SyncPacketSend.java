@@ -49,7 +49,7 @@ final public class SyncPacketSend {
 		if (result == null) {
 			throw new XMPPException(SmackError.NO_RESPONSE_FROM_SERVER);
 		} else if (result.getError() != null) {
-			throw new XMPPException(result.getError().getCondition().toString());
+			throw new XMPPException(result.getError());
 		}
 		return result;
 	}

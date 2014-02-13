@@ -17,11 +17,11 @@
 
 package org.jivesoftware.smack;
 
-import org.jivesoftware.smack.packet.StreamError;
-import org.jivesoftware.smack.packet.XMPPError;
-
 import java.io.PrintStream;
 import java.io.PrintWriter;
+
+import org.jivesoftware.smack.packet.StreamError;
+import org.xmpp.packet.PacketError;
 
 /**
  * A generic exception that is thrown when an error occurs performing an
@@ -41,7 +41,7 @@ public class XMPPException extends Exception {
     private static final long serialVersionUID = 6881651633890968625L;
     
     private StreamError streamError = null;
-    private XMPPError error = null;
+    private PacketError error = null;
     private Throwable wrappedThrowable = null;
     private SmackError smackError = null;
 
@@ -100,7 +100,7 @@ public class XMPPException extends Exception {
      *
      * @param error the root cause of the exception.
      */
-    public XMPPException(XMPPError error) {
+    public XMPPException(PacketError error) {
         super();
         this.error = error;
     }
@@ -125,7 +125,7 @@ public class XMPPException extends Exception {
      * @param error the root cause of the exception.
      * @param wrappedThrowable the root cause of the exception.
      */
-    public XMPPException(String message, XMPPError error, Throwable wrappedThrowable) {
+    public XMPPException(String message, PacketError error, Throwable wrappedThrowable) {
         super(message);
         this.error = error;
         this.wrappedThrowable = wrappedThrowable;
@@ -138,18 +138,18 @@ public class XMPPException extends Exception {
      * @param message a description of the exception.
      * @param error the root cause of the exception.
      */
-    public XMPPException(String message, XMPPError error) {
+    public XMPPException(String message, PacketError error) {
         super(message);
         this.error = error;
     }
 
-    /**
+	/**
      * Returns the XMPPError asscociated with this exception, or <tt>null</tt> if there
      * isn't one.
      *
      * @return the XMPPError asscociated with this exception.
      */
-    public XMPPError getXMPPError() {
+    public PacketError getXMPPError() {
         return error;
     }
 

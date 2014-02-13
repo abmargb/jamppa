@@ -71,7 +71,7 @@ class NonSASLAuthentication implements UserAuthentication {
         }
         // If the server replied with an error, throw an exception.
         else if (response.getType() == IQ.Type.error) {
-            throw new XMPPException(response.getError().toString());
+            throw new XMPPException(response.getError());
         }
         // Otherwise, no error so continue processing.
         Authentication authTypes = (Authentication) response;
@@ -103,7 +103,7 @@ class NonSASLAuthentication implements UserAuthentication {
             throw new XMPPException("Authentication failed.");
         }
         else if (response.getType() == IQ.Type.error) {
-            throw new XMPPException(response.getError().toString());
+            throw new XMPPException(response.getError());
         }
         // We're done with the collector, so explicitly cancel it.
         collector.cancel();
@@ -125,7 +125,7 @@ class NonSASLAuthentication implements UserAuthentication {
             throw new XMPPException("Anonymous login failed.");
         }
         else if (response.getType() == IQ.Type.error) {
-            throw new XMPPException(response.getError().toString());
+            throw new XMPPException(response.getError());
         }
         // We're done with the collector, so explicitly cancel it.
         collector.cancel();
