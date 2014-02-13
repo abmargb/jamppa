@@ -229,7 +229,7 @@ class PacketReader {
 				}
 			}
 		} catch (Exception e) {
-            if (!(done || connection.isSocketClosed())) {
+            if (!done && !connection.isSocketClosed()) {
                 connection.notifyConnectionError(e);
             }
         }
