@@ -18,6 +18,8 @@
 package org.jivesoftware.smack;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -113,7 +115,16 @@ class PacketReader {
      *      for more than five seconds.
      */
     synchronized public void startup() throws XMPPException {
-        readerThread.start();
+    	final List<Exception> errors = new LinkedList<Exception>();
+    	AbstractConnectionListener connectionErrorListener = new AbstractConnectionListener() {
+    		@Override
+    		public void connectionClosedOnError(Exception e) {
+    			errors.add(e);
+    		}
+    	};
+		connection.addConnectionListener(connectionErrorListener);
+
+    	readerThread.start();
         // Wait for stream tag before returning. We'll wait a couple of seconds before
         // giving up and throwing an error.
         try {
@@ -127,10 +138,14 @@ class PacketReader {
         catch (InterruptedException ie) {
             // Ignore.
         }
+        
+        connection.removeConnectionListener(connectionErrorListener);
+        
         if (connectionID == null) {
             throw new XMPPException("Connection failed. No response from server.");
-        }
-        else {
+        } else  if (!errors.isEmpty()) {
+            throw new XMPPException(errors.iterator().next());
+        } else {
             connection.connectionID = connectionID;
         }
     }
@@ -231,6 +246,9 @@ class PacketReader {
 		} catch (Exception e) {
             if (!done && !connection.isSocketClosed()) {
                 connection.notifyConnectionError(e);
+                if (!connection.isConnected()) {
+                	releaseConnectionIDLock();
+                }
             }
         }
     }
