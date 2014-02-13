@@ -23,9 +23,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.jivesoftware.smack.packet.DefaultPacketExtension;
 import org.jivesoftware.smack.packet.PacketExtension;
@@ -66,7 +66,7 @@ public class PacketParserUtils {
 			XmlPullParserException {
 		String code = null;
 		Element condEl = (Element) el.elements().iterator().next();
-		if (condEl.getNamespace().equals(StreamError.NAMESPACE)) {
+		if (condEl.getNamespace().getURI().equals(StreamError.NAMESPACE)) {
 			code = condEl.getName();
 		}
 		String text = condEl.elementText("text");
@@ -166,7 +166,7 @@ public class PacketParserUtils {
 				errorType = XMPPError.Type.valueOf(type.toUpperCase());
 			}
 		} catch (IllegalArgumentException iae) {
-			logger.log(Level.SEVERE,
+			logger.log(Level.ERROR,
 					"Could not find error type for " + type.toUpperCase(), iae);
 		}
 		return new XMPPError(Integer.parseInt(errorCode), errorType, condition,

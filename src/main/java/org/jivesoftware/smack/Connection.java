@@ -31,8 +31,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.compression.Java7ZlibInputOutputStream;
 import org.jivesoftware.smack.compression.JzlibInputOutputStream;
 import org.jivesoftware.smack.compression.XMPPInputOutputStream;
@@ -768,7 +768,7 @@ public abstract class Connection {
                         debuggerClass = Class.forName(className);
                     }
                     catch (Exception e) {
-                        log.warning("Unabled to instantiate debugger class " + className);
+                        log.warn("Unabled to instantiate debugger class " + className);
                     }
                 }
                 if (debuggerClass == null) {
@@ -782,7 +782,7 @@ public abstract class Connection {
                                     Class.forName("org.jivesoftware.smack.debugger.LiteDebugger");
                         }
                         catch (Exception ex2) {
-                            log.warning("Unabled to instantiate either Smack debugger class");
+                            log.warn("Unabled to instantiate either Smack debugger class");
                         }
                     }
                 }

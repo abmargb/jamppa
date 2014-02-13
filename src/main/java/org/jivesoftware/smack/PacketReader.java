@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.io.XPPPacketReader;
 import org.jivesoftware.smack.Connection.ListenerWrapper;
@@ -55,13 +55,14 @@ import org.xmpp.packet.Roster;
  */
 class PacketReader {
 
-    private static Logger log = Logger.getLogger(PacketReader.class.getName());
+    private static Logger LOGGER = Logger.getLogger(PacketReader.class.getName());
     
     private Thread readerThread;
     private ExecutorService listenerExecutor;
 
     private XMPPConnection connection;
     private XPPPacketReader innerReader;
+    private boolean reset = false;
     volatile boolean done;
 
     private String connectionID = null;
@@ -146,7 +147,7 @@ class PacketReader {
                 catch (Exception e) {
                     // Catch and print any exception so we can recover
                     // from a faulty listener and finish the shutdown process
-                    log.log(Level.SEVERE, "Error in listener while closing connection", e);
+                    LOGGER.log(Level.ERROR, "Error in listener while closing connection", e);
                 }
             }
         }
@@ -166,15 +167,19 @@ class PacketReader {
             innerReader = new XPPPacketReader();
             innerReader.setXPPFactory(XmlPullParserFactory.newInstance());
             innerReader.getXPPParser().setInput(connection.reader);
-            XmlPullParser xpp = innerReader.getXPPParser();
-            for (int eventType = xpp.getEventType(); eventType != XmlPullParser.START_TAG;) {
-                eventType = xpp.next();
-            }
-            parseStreamStart(xpp);
+            reset = true;
         } catch (Exception xppe) {
-            log.log(Level.WARNING, "Error while resetting parser", xppe);
+            LOGGER.log(Level.WARN, "Error while resetting parser", xppe);
         }
     }
+
+	private void startStream() throws XmlPullParserException, IOException {
+		XmlPullParser xpp = innerReader.getXPPParser();
+		for (int eventType = xpp.getEventType(); eventType != XmlPullParser.START_TAG;) {
+		    eventType = xpp.next();
+		}
+		parseStreamStart(xpp);
+	}
 
 	private void parseStreamStart(XmlPullParser parser) {
 		if ("jabber:client".equals(parser.getNamespace(null))) {
@@ -200,12 +205,20 @@ class PacketReader {
     private void parsePackets(Thread thread) {
         try {
 			while (!done) {
+				if (reset) {
+					startStream();
+					LOGGER.debug("Started xmlstream...");
+					reset = false;
+					continue;
+				}
 				Element doc = innerReader.parseDocument().getRootElement();
 				if (doc == null) {
 					connection.disconnect();
+					LOGGER.debug("End of xmlstream.");
 					continue;
 				}
 				Packet packet = null;
+				LOGGER.debug("Processing packet " + doc.asXML());
 				String tag = doc.getName();
 				if ("message".equals(tag)) {
 					packet = new Message(doc);
@@ -258,9 +271,9 @@ class PacketReader {
 	}
     
 	private void parseFailure(Element failureEl) throws Exception {
-        if ("urn:ietf:params:xml:ns:xmpp-tls".equals(failureEl.getNamespace())) {
+        if ("urn:ietf:params:xml:ns:xmpp-tls".equals(failureEl.getNamespace().getURI())) {
             throw new Exception("TLS negotiation has failed");
-        } else if ("http://jabber.org/protocol/compress".equals(failureEl.getNamespace())) {
+        } else if ("http://jabber.org/protocol/compress".equals(failureEl.getNamespace().getURI())) {
             connection.streamCompressionDenied();
         } else {
             final Failure failure = new Failure(failureEl);
@@ -271,12 +284,12 @@ class PacketReader {
 
 	private IQ parseIQ(Element doc) {
 		Element pingEl = doc.element(Ping.ELEMENT);
-		if (pingEl != null && pingEl.getNamespace().equals(Ping.NAMESPACE)) {
+		if (pingEl != null && pingEl.getNamespace().getURI().equals(Ping.NAMESPACE)) {
 			return new Ping(doc);
 		}
 		
 		Element bindEl = doc.element(Bind.ELEMENT);
-		if (bindEl != null && bindEl.getNamespace().equals(Bind.NAMESPACE)) {
+		if (bindEl != null && bindEl.getNamespace().getURI().equals(Bind.NAMESPACE)) {
 			return new Bind(doc);
 		}
 		
@@ -333,27 +346,27 @@ class PacketReader {
     private void parseFeatures(Element doc) throws Exception {
     	boolean startTLSReceived = false;
         Element startTLSEl = doc.element("starttls");
-        if (startTLSEl != null && startTLSEl.getNamespace().equals(
+        if (startTLSEl != null && startTLSEl.getNamespace().getURI().equals(
         		"urn:ietf:params:xml:ns:xmpp-tls")) {
         	startTLSReceived = true;
         	connection.startTLSReceived(startTLSEl.element("required") != null);
         }
         
         Element mechanismsEl = doc.element("mechanisms");
-        if (mechanismsEl != null && mechanismsEl.getNamespace().equals(
+        if (mechanismsEl != null && mechanismsEl.getNamespace().getURI().equals(
         		"urn:ietf:params:xml:ns:xmpp-sasl")) {
         	connection.getSASLAuthentication().setAvailableSASLMethods(
         			PacketParserUtils.parseMechanisms(mechanismsEl));
         }
         
         Element bindEl = doc.element("bind");
-		if (bindEl != null && bindEl.getNamespace().equals(
+		if (bindEl != null && bindEl.getNamespace().getURI().equals(
 				"urn:ietf:params:xml:ns:xmpp-bind")) {
 			connection.getSASLAuthentication().bindingRequired();
         }
 		
 		Element cEl = doc.element("c");
-		if (cEl != null && cEl.getNamespace().equals(
+		if (cEl != null && cEl.getNamespace().getURI().equals(
 				"http://jabber.org/protocol/caps")) {
 			String node = doc.attributeValue("node");
             String ver = doc.attributeValue("ver");
@@ -364,26 +377,26 @@ class PacketReader {
 		}
 		
 		Element sessionEl = doc.element("session");
-		if (sessionEl != null && sessionEl.getNamespace().equals(
+		if (sessionEl != null && sessionEl.getNamespace().getURI().equals(
 				"urn:ietf:params:xml:ns:xmpp-session")) {
 			connection.getSASLAuthentication().sessionsSupported();
         }
 		
 		Element verEl = doc.element("ver");
-		if (verEl != null && verEl.getNamespace().equals(
+		if (verEl != null && verEl.getNamespace().getURI().equals(
 				"urn:xmpp:features:rosterver")) {
             connection.setRosterVersioningSupported();
         }
 		
 		Element compressionEl = doc.element("compression");
-		if (compressionEl != null && compressionEl.getNamespace().equals(
+		if (compressionEl != null && compressionEl.getNamespace().getURI().equals(
 				"http://jabber.org/features/compress")) {
 			connection.setAvailableCompressionMethods(
 					PacketParserUtils.parseCompressionMethods(compressionEl));
         }
 		
 		Element registerEl = doc.element("register");
-		if (registerEl != null && registerEl.getNamespace().equals(
+		if (registerEl != null && registerEl.getNamespace().getURI().equals(
 				"http://jabber.org/features/iq-register")) {
 			connection.getAccountManager().setSupportsAccountCreation(true);
         }
@@ -420,7 +433,7 @@ class PacketReader {
                 try {
                     listenerWrapper.notifyListener(packet);
                 } catch (Exception e) {
-                    log.log(Level.SEVERE, "Exception in packet listener", e);
+                    LOGGER.log(Level.ERROR, "Exception in packet listener", e);
                 }
             }
         }

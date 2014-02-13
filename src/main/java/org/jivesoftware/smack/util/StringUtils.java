@@ -31,10 +31,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 /**
  * A collection of utility methods for String objects.
@@ -661,7 +662,7 @@ public class StringUtils {
                 digest = MessageDigest.getInstance("SHA-1");
             }
             catch (NoSuchAlgorithmException nsae) {
-                log.log(Level.SEVERE, "Failed to load the SHA-1 MessageDigest. Smack will be unable to function normally.", nsae);
+                log.log(Level.ERROR, "Failed to load the SHA-1 MessageDigest. Smack will be unable to function normally.", nsae);
             }
         }
         // Now, compute hash.
@@ -669,7 +670,7 @@ public class StringUtils {
             digest.update(data.getBytes("UTF-8"));
         }
         catch (UnsupportedEncodingException e) {
-            log.log(Level.SEVERE, "Error computing hash", e);
+            log.log(Level.ERROR, "Error computing hash", e);
         }
         return encodeHex(digest.digest());
     }

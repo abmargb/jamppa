@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.filter.AndFilter;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.filter.PacketIDFilter;
@@ -134,7 +134,7 @@ public class AccountManager {
             }
         }
         catch (XMPPException xe) {
-            logger.log(Level.SEVERE, "Error retrieving account attributes from server", xe);
+            logger.log(Level.ERROR, "Error retrieving account attributes from server", xe);
         }
         return Collections.emptySet();
     }
@@ -155,7 +155,7 @@ public class AccountManager {
             return info.getAttributes().get(name);
         }
         catch (XMPPException xe) {
-            logger.log(Level.SEVERE, "Error retrieving account attribute " + name + " info from server", xe);
+            logger.log(Level.ERROR, "Error retrieving account attribute " + name + " info from server", xe);
         }
         return null;
     }
@@ -175,7 +175,7 @@ public class AccountManager {
             return info.getInstructions();
         }
         catch (XMPPException xe) {
-            logger.log(Level.SEVERE, "Error retrieving account instructions from server", xe);
+            logger.log(Level.ERROR, "Error retrieving account instructions from server", xe);
             return null;
         }
     }

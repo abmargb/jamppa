@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
+import org.jamppa.XMPPBase;
 import org.jamppa.component.handler.QueryHandler;
 import org.jamppa.component.utils.XMPPUtils;
 import org.jivesoftware.whack.ExternalComponentManager;
@@ -65,6 +66,14 @@ public class XMPPComponent extends AbstractComponent implements PacketSender  {
 		this.port = port;
 	}
 
+	public void process() {
+		new XMPPBase().process();
+	}
+
+	public void process(boolean block) {
+		new XMPPBase().process(block);
+	}
+	
 	public void addSetHandler(QueryHandler queryHandler) {
 		queryHandler.setPacketSender(this);
 		querySetHandlers.put(queryHandler.getNamespace(), queryHandler);
@@ -169,36 +178,6 @@ public class XMPPComponent extends AbstractComponent implements PacketSender  {
 		send(packet);
 	}
 	
-	public void process() throws ComponentException {
-		process(false);
-	}
-	
-	/**
-	 * @throws ComponentException 
-	 * 
-	 */
-	public void process(boolean block) throws ComponentException {
-		Runnable componentRunnable = new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						LOGGER.fatal("Main loop.", e);
-					}
-				}
-			}
-		};
-		
-		Thread t = new Thread(componentRunnable, "jamppa-component-hanging-thread");
-		if (block) {
-			t.run();
-		} else {
-			t.start();
-		}
-	}
-
 	public void connect() throws ComponentException {
 		LOGGER.debug("Initializing XMPP component...");
 		

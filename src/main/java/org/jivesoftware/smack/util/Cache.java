@@ -17,10 +17,18 @@
 
 package org.jivesoftware.smack.util;
 
+import java.util.AbstractCollection;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
 import org.jivesoftware.smack.util.collections.AbstractMapEntry;
 
-import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * A specialized Map that is size-limited (using an LRU algorithm) and
@@ -381,7 +389,7 @@ public class Cache<K, V> implements Map<K, V> {
 
         while (expireTime > node.timestamp) {
             if (remove(node.object, true) == null) {
-                log.warning("Error attempting to remove(" + node.object.toString() + ") - cacheObject not found in cache!");
+                log.warn("Error attempting to remove(" + node.object.toString() + ") - cacheObject not found in cache!");
                 // remove from the ageList
                 node.remove();
             }
@@ -415,7 +423,7 @@ public class Cache<K, V> implements Map<K, V> {
             for (int i=map.size(); i>desiredSize; i--) {
                 // Get the key and invoke the remove method on it.
                 if (remove(lastAccessedList.getLast().object, true) == null) {
-                    log.warning("Error attempting to cullCache with remove(" + lastAccessedList.getLast().object.toString() + ") - cacheObject not found in cache!");
+                    log.warn("Error attempting to cullCache with remove(" + lastAccessedList.getLast().object.toString() + ") - cacheObject not found in cache!");
                     lastAccessedList.getLast().remove();
                 }
             }

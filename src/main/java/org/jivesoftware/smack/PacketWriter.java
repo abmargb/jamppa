@@ -21,9 +21,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.xmpp.packet.Packet;
 
 /**
@@ -37,7 +37,8 @@ import org.xmpp.packet.Packet;
  * @author Matt Tucker
  */
 class PacketWriter {
-    private static Logger log = Logger.getLogger(PacketWriter.class.getName());
+    
+	private static Logger LOGGER = Logger.getLogger(PacketWriter.class.getName());
     
     private Thread writerThread;
     private Writer writer;
@@ -88,7 +89,7 @@ class PacketWriter {
                 queue.put(packet);
             }
             catch (InterruptedException ie) {
-                log.log(Level.SEVERE, "Failed to queue packet to send to server: " + packet.toString(), ie);
+                LOGGER.log(Level.ERROR, "Failed to queue packet to send to server: " + packet.toString(), ie);
                 return;
             }
             synchronized (queue) {
@@ -154,6 +155,7 @@ class PacketWriter {
             while (!done && (writerThread == thisThread)) {
                 Packet packet = nextPacket();
                 if (packet != null) {
+                	LOGGER.debug("Sending packet " + packet.toXML());
                     writer.write(packet.toXML());
 
                     if (queue.isEmpty()) {
@@ -172,7 +174,7 @@ class PacketWriter {
                 writer.flush();
             }
             catch (Exception e) {
-                log.warning("Error flushing queue during shutdown, ignore and continue");
+                LOGGER.warn("Error flushing queue during shutdown, ignore and continue");
             }
 
             // Delete the queue contents (hopefully nothing is left).
