@@ -1,11 +1,13 @@
 jamppa
 ======
 
-jamppa started as a fork from smack (https://github.com/igniterealtime/Smack) and whack (http://fisheye.igniterealtime.org/browse/whack/trunk), but it uses tinder, and consequently DOM, for XML manipulation, which makes the developer's life easier.
+jamppa started as a fork from [smack](https://github.com/igniterealtime/Smack) and [whack](http://fisheye.igniterealtime.org/browse/whack/trunk), but it uses [tinder](http://fisheye.igniterealtime.org/browse/tinder/trunk), and consequently DOM, for XML manipulation, which makes the developer's life easier.
 
 ## Writing components
 
 A jamppa component uses handlers triggered by namespaces, so that you don't rely on a single method to process all incoming IQs. All components should extend XMPPComponent and then use the addGetHandler() and addSetHandler() methods to include handlers.
+
+Handlers should extend the AbstractQueryHandler class.
 
 ```java
 public static void main(String[] args) throws ComponentException {
@@ -42,7 +44,7 @@ private static class UppercaseComponent extends XMPPComponent {
 
 ## Writing clients
 
-jamppa, just like sleekxmpp, works with a plugin architecture, and only the XMPP core is implemented in the standard client.
+jamppa, just like [sleekxmpp](http://sleekxmpp.com/), works with a plugin architecture, and only the XMPP core is implemented in the standard client.
 
 ```java
 XMPPClient client = new XMPPClient("client@test.com", 
@@ -52,11 +54,7 @@ XEP0077 register = new XEP0077();
 client.registerPlugin(register);
 
 client.connect();
-try {
-	register.createAccount("client@test.com", "password");
-} catch (XMPPException e) {
-	e.printStackTrace();
-}
+register.createAccount("client@test.com", "password");
 
 client.login();
 client.process(false);
