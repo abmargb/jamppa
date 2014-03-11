@@ -6,7 +6,7 @@
   <name>jamppa</name>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
-  <description>jamnppa is a XMPP client/component library</description>
+  <description>jamppa is a XMPP client/component library</description>
   <url>https://github.com/abmargb/jamppa</url>
   
   <licenses>
