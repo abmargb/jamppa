@@ -19,7 +19,7 @@
   
   <scm>
     <url>https://github.com/abmargb/jamppa.git</url>
-    <connection>https://github.com/abmargb/jamppa.git</connection>
+    <connection>scm:git:git://github.com/abmargb/jamppa.git</connection>
   </scm>
   
   <developers>
