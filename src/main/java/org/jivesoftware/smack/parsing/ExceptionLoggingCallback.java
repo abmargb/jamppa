@@ -20,19 +20,22 @@ package org.jivesoftware.smack.parsing;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
-
 /**
- * Simple parsing exception callback that only logs the encountered parsing exception to java util logging.
+ * Simple parsing exception callback that only logs the encountered parsing
+ * exception to java util logging.
  * 
  * @author Florian Schmaus
  * 
  */
 public class ExceptionLoggingCallback extends ParsingExceptionCallback {
-    private static Logger log = Logger.getLogger(ExceptionLoggingCallback.class.getName());
-    
+    private static Logger log = Logger.getLogger(ExceptionLoggingCallback.class
+            .getName());
+
     @Override
-    public void handleUnparsablePacket(UnparsablePacket unparsed) throws Exception {
-        log.log(Level.ERROR, "Smack message parsing exception: ", unparsed.getParsingException());
+    public void handleUnparsablePacket(UnparsablePacket unparsed)
+            throws Exception {
+        log.log(Level.ERROR, "Smack message parsing exception: ",
+                unparsed.getParsingException());
         log.error("Unparsed content: " + unparsed.getContent());
     }
 }

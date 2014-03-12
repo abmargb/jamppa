@@ -20,9 +20,9 @@ package org.jivesoftware.smack.filter;
 import org.xmpp.packet.Packet;
 
 /**
- * Implements the logical OR operation over two or more packet filters. In
- * other words, packets pass this filter if they pass <b>any</b> of the filters.
- *
+ * Implements the logical OR operation over two or more packet filters. In other
+ * words, packets pass this filter if they pass <b>any</b> of the filters.
+ * 
  * @author Matt Tucker
  */
 public class OrFilter implements PacketFilter {
@@ -35,7 +35,7 @@ public class OrFilter implements PacketFilter {
     /**
      * The list of filters.
      */
-    private PacketFilter [] filters;
+    private PacketFilter[] filters;
 
     /**
      * Creates an empty OR filter. Filters should be added using the
@@ -48,9 +48,11 @@ public class OrFilter implements PacketFilter {
 
     /**
      * Creates an OR filter using the two specified filters.
-     *
-     * @param filter1 the first packet filter.
-     * @param filter2 the second packet filter.
+     * 
+     * @param filter1
+     *            the first packet filter.
+     * @param filter2
+     *            the second packet filter.
      */
     public OrFilter(PacketFilter filter1, PacketFilter filter2) {
         if (filter1 == null || filter2 == null) {
@@ -63,10 +65,11 @@ public class OrFilter implements PacketFilter {
     }
 
     /**
-     * Adds a filter to the filter list for the OR operation. A packet
-     * will pass the filter if any filter in the list accepts it.
-     *
-     * @param filter a filter to add to the filter list.
+     * Adds a filter to the filter list for the OR operation. A packet will pass
+     * the filter if any filter in the list accepts it.
+     * 
+     * @param filter
+     *            a filter to add to the filter list.
      */
     public void addFilter(PacketFilter filter) {
         if (filter == null) {
@@ -74,8 +77,8 @@ public class OrFilter implements PacketFilter {
         }
         // If there is no more room left in the filters array, expand it.
         if (size == filters.length) {
-            PacketFilter [] newFilters = new PacketFilter[filters.length+2];
-            for (int i=0; i<filters.length; i++) {
+            PacketFilter[] newFilters = new PacketFilter[filters.length + 2];
+            for (int i = 0; i < filters.length; i++) {
                 newFilters[i] = filters[i];
             }
             filters = newFilters;
@@ -86,7 +89,7 @@ public class OrFilter implements PacketFilter {
     }
 
     public boolean accept(Packet packet) {
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             if (filters[i].accept(packet)) {
                 return true;
             }

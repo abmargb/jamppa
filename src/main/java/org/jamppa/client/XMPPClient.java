@@ -14,66 +14,66 @@ import org.xmpp.packet.Packet;
 
 public class XMPPClient {
 
-	private JID jid;
-	private XMPPConnection connection;
-	private String password;
-	private XMPPBase base = new XMPPBase();
-	
-	public XMPPClient(String jid, String password, String host, int port) {
-		this.jid = new JID(jid);
-		this.password = password;
-		ConnectionConfiguration cc = new ConnectionConfiguration(
-				host, port, this.jid.getDomain());
-		this.connection = new XMPPConnection(cc);
-	}
-	
-	public void connect() throws XMPPException {
-		this.connection.connect();
-	}
-	
-	public void registerPlugin(Plugin plugin) throws XMPPException {
-		plugin.create(this);
-		this.connection.registerPlugin(plugin);
-	}
-	
-	public XMPPConnection getConnection() {
-		return connection;
-	}
-	
-	public void login() throws XMPPException {
-		this.connection.login(jid.getNode(), password);
-	}
-	
-	public void process() throws ComponentException {
-		base.process();
-	}
+    private JID jid;
+    private XMPPConnection connection;
+    private String password;
+    private XMPPBase base = new XMPPBase();
 
-	public void process(boolean block) {
-		base.process(block);
-	}
-	
-	public JID getJid() {
-		return jid;
-	}
-	
-	public String getPassword() {
-		return password;
-	}
-	
-	public void send(Packet packet) {
-		connection.sendPacket(packet);
-	}
-	
-	public Packet syncSend(Packet packet) throws XMPPException {
-		return SyncPacketSend.getReply(connection, packet);
-	}
-	
-	public void on(PacketFilter filter, PacketListener callback) {
-		connection.addPacketListener(callback, filter);
-	}
+    public XMPPClient(String jid, String password, String host, int port) {
+        this.jid = new JID(jid);
+        this.password = password;
+        ConnectionConfiguration cc = new ConnectionConfiguration(host, port,
+                this.jid.getDomain());
+        this.connection = new XMPPConnection(cc);
+    }
 
-	public void disconnect() {
-		connection.disconnect();
-		base.disconnect();
-	}
+    public void connect() throws XMPPException {
+        this.connection.connect();
+    }
+
+    public void registerPlugin(Plugin plugin) throws XMPPException {
+        plugin.create(this);
+        this.connection.registerPlugin(plugin);
+    }
+
+    public XMPPConnection getConnection() {
+        return connection;
+    }
+
+    public void login() throws XMPPException {
+        this.connection.login(jid.getNode(), password);
+    }
+
+    public void process() throws ComponentException {
+        base.process();
+    }
+
+    public void process(boolean block) {
+        base.process(block);
+    }
+
+    public JID getJid() {
+        return jid;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void send(Packet packet) {
+        connection.sendPacket(packet);
+    }
+
+    public Packet syncSend(Packet packet) throws XMPPException {
+        return SyncPacketSend.getReply(connection, packet);
+    }
+
+    public void on(PacketFilter filter, PacketListener callback) {
+        connection.addPacketListener(callback, filter);
+    }
+
+    public void disconnect() {
+        connection.disconnect();
+        base.disconnect();
+    }
 }

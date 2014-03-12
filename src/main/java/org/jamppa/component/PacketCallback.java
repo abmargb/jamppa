@@ -19,10 +19,10 @@ import org.xmpp.packet.Packet;
 
 /**
  * @author Abmar
- *
+ * 
  */
 public interface PacketCallback {
 
-	void handle(Packet packet);
-	
+    void handle(Packet packet);
+
 }

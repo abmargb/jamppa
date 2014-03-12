@@ -33,137 +33,112 @@ import java.util.regex.Pattern;
  * 
  * @author Atul Aggarwal
  */
-class HTTPProxySocketFactory 
-    extends SocketFactory
-{
+class HTTPProxySocketFactory extends SocketFactory {
 
     private ProxyInfo proxy;
 
-    public HTTPProxySocketFactory(ProxyInfo proxy)
-    {
+    public HTTPProxySocketFactory(ProxyInfo proxy) {
         this.proxy = proxy;
     }
 
-    public Socket createSocket(String host, int port) 
-        throws IOException, UnknownHostException
-    {
+    public Socket createSocket(String host, int port) throws IOException,
+            UnknownHostException {
         return httpProxifiedSocket(host, port);
     }
 
-    public Socket createSocket(String host ,int port, InetAddress localHost,
-                                int localPort)
-        throws IOException, UnknownHostException
-    {
+    public Socket createSocket(String host, int port, InetAddress localHost,
+            int localPort) throws IOException, UnknownHostException {
         return httpProxifiedSocket(host, port);
     }
 
-    public Socket createSocket(InetAddress host, int port)
-        throws IOException
-    {
+    public Socket createSocket(InetAddress host, int port) throws IOException {
         return httpProxifiedSocket(host.getHostAddress(), port);
-        
+
     }
 
-    public Socket createSocket( InetAddress address, int port, 
-                                InetAddress localAddress, int localPort) 
-        throws IOException
-    {
+    public Socket createSocket(InetAddress address, int port,
+            InetAddress localAddress, int localPort) throws IOException {
         return httpProxifiedSocket(address.getHostAddress(), port);
     }
-  
+
     private Socket httpProxifiedSocket(String host, int port)
-        throws IOException 
-    {
+            throws IOException {
         String proxyhost = proxy.getProxyAddress();
         int proxyPort = proxy.getProxyPort();
-        Socket socket = new Socket(proxyhost,proxyPort);
+        Socket socket = new Socket(proxyhost, proxyPort);
         String hostport = "CONNECT " + host + ":" + port;
         String proxyLine;
         String username = proxy.getProxyUsername();
-        if (username == null)
-        {
+        if (username == null) {
             proxyLine = "";
-        }
-        else
-        {
+        } else {
             String password = proxy.getProxyPassword();
-            proxyLine = "\r\nProxy-Authorization: Basic " + StringUtils.encodeBase64(username + ":" + password);
+            proxyLine = "\r\nProxy-Authorization: Basic "
+                    + StringUtils.encodeBase64(username + ":" + password);
         }
-        socket.getOutputStream().write((hostport + " HTTP/1.1\r\nHost: "
-            + hostport + proxyLine + "\r\n\r\n").getBytes("UTF-8"));
-        
+        socket.getOutputStream()
+                .write((hostport + " HTTP/1.1\r\nHost: " + hostport + proxyLine + "\r\n\r\n")
+                        .getBytes("UTF-8"));
+
         InputStream in = socket.getInputStream();
         StringBuilder got = new StringBuilder(100);
         int nlchars = 0;
-        
-        while (true)
-        {
+
+        while (true) {
             char c = (char) in.read();
             got.append(c);
-            if (got.length() > 1024)
-            {
-                throw new ProxyException(ProxyInfo.ProxyType.HTTP, "Recieved " +
-                    "header of >1024 characters from "
-                    + proxyhost + ", cancelling connection");
+            if (got.length() > 1024) {
+                throw new ProxyException(ProxyInfo.ProxyType.HTTP, "Recieved "
+                        + "header of >1024 characters from " + proxyhost
+                        + ", cancelling connection");
             }
-            if (c == -1)
-            {
+            if (c == -1) {
                 throw new ProxyException(ProxyInfo.ProxyType.HTTP);
             }
-            if ((nlchars == 0 || nlchars == 2) && c == '\r')
-            {
+            if ((nlchars == 0 || nlchars == 2) && c == '\r') {
                 nlchars++;
-            }
-            else if ((nlchars == 1 || nlchars == 3) && c == '\n')
-            {
+            } else if ((nlchars == 1 || nlchars == 3) && c == '\n') {
                 nlchars++;
-            }
-            else
-            {
+            } else {
                 nlchars = 0;
             }
-            if (nlchars == 4)
-            {
+            if (nlchars == 4) {
                 break;
             }
         }
 
-        if (nlchars != 4)
-        {
-            throw new ProxyException(ProxyInfo.ProxyType.HTTP, "Never " +
-                "received blank line from " 
-                + proxyhost + ", cancelling connection");
+        if (nlchars != 4) {
+            throw new ProxyException(ProxyInfo.ProxyType.HTTP, "Never "
+                    + "received blank line from " + proxyhost
+                    + ", cancelling connection");
         }
 
         String gotstr = got.toString();
-        
+
         BufferedReader br = new BufferedReader(new StringReader(gotstr));
         String response = br.readLine();
-        
-        if (response == null)
-        {
-            throw new ProxyException(ProxyInfo.ProxyType.HTTP, "Empty proxy " +
-                "response from " + proxyhost + ", cancelling");
+
+        if (response == null) {
+            throw new ProxyException(ProxyInfo.ProxyType.HTTP, "Empty proxy "
+                    + "response from " + proxyhost + ", cancelling");
         }
-        
+
         Matcher m = RESPONSE_PATTERN.matcher(response);
-        if (!m.matches())
-        {
-            throw new ProxyException(ProxyInfo.ProxyType.HTTP , "Unexpected " +
-                "proxy response from " + proxyhost + ": " + response);
+        if (!m.matches()) {
+            throw new ProxyException(ProxyInfo.ProxyType.HTTP, "Unexpected "
+                    + "proxy response from " + proxyhost + ": " + response);
         }
-        
+
         int code = Integer.parseInt(m.group(1));
-        
-        if (code != HttpURLConnection.HTTP_OK)
-        {
+
+        if (code != HttpURLConnection.HTTP_OK) {
             throw new ProxyException(ProxyInfo.ProxyType.HTTP);
         }
-        
+
         return socket;
     }
 
-    private static final Pattern RESPONSE_PATTERN
-        = Pattern.compile("HTTP/\\S+\\s(\\d+)\\s(.*)\\s*");
+    private static final Pattern RESPONSE_PATTERN = Pattern
+            .compile("HTTP/\\S+\\s(\\d+)\\s(.*)\\s*");
 
 }

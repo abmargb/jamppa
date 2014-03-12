@@ -30,9 +30,9 @@ import org.xmpp.packet.Roster.Ask;
 import org.xmpp.packet.Roster.Subscription;
 
 /**
- * Each user in your roster is represented by a roster entry, which contains the user's
- * JID and a name or nickname you assign.
- *
+ * Each user in your roster is represented by a roster entry, which contains the
+ * user's JID and a name or nickname you assign.
+ * 
  * @author Matt Tucker
  */
 public class RosterEntry {
@@ -46,15 +46,21 @@ public class RosterEntry {
 
     /**
      * Creates a new roster entry.
-     *
-     * @param user the user.
-     * @param name the nickname for the entry.
-     * @param type the subscription type.
-     * @param ask the subscription status (related to subscriptions pending to be approbed).
-     * @param connection a connection to the XMPP server.
+     * 
+     * @param user
+     *            the user.
+     * @param name
+     *            the nickname for the entry.
+     * @param type
+     *            the subscription type.
+     * @param ask
+     *            the subscription status (related to subscriptions pending to
+     *            be approbed).
+     * @param connection
+     *            a connection to the XMPP server.
      */
-    RosterEntry(String user, String name, Subscription subscription,
-                Ask ask, UserRoster roster, Connection connection) {
+    RosterEntry(String user, String name, Subscription subscription, Ask ask,
+            UserRoster roster, Connection connection) {
         this.user = user;
         this.name = name;
         this.subscription = subscription;
@@ -65,7 +71,7 @@ public class RosterEntry {
 
     /**
      * Returns the JID of the user associated with this entry.
-     *
+     * 
      * @return the user associated with this entry.
      */
     public String getUser() {
@@ -74,7 +80,7 @@ public class RosterEntry {
 
     /**
      * Returns the name associated with this entry.
-     *
+     * 
      * @return the name.
      */
     public String getName() {
@@ -83,8 +89,9 @@ public class RosterEntry {
 
     /**
      * Sets the name associated with this entry.
-     *
-     * @param name the name.
+     * 
+     * @param name
+     *            the name.
      */
     public void setName(String name) {
         // Do nothing if the name hasn't changed.
@@ -100,10 +107,14 @@ public class RosterEntry {
 
     /**
      * Updates the state of the entry with the new values.
-     *
-     * @param name the nickname for the entry.
-     * @param type the subscription type.
-     * @param status the subscription status (related to subscriptions pending to be approbed).
+     * 
+     * @param name
+     *            the nickname for the entry.
+     * @param type
+     *            the subscription type.
+     * @param status
+     *            the subscription status (related to subscriptions pending to
+     *            be approbed).
      */
     void updateState(String name, Subscription type, Ask status) {
         this.name = name;
@@ -112,27 +123,28 @@ public class RosterEntry {
     }
 
     /**
-     * Returns an unmodifiable collection of the roster groups that this entry belongs to.
-     *
+     * Returns an unmodifiable collection of the roster groups that this entry
+     * belongs to.
+     * 
      * @return an iterator for the groups this entry belongs to.
      */
     public Collection<RosterGroup> getGroups() {
         List<RosterGroup> results = new ArrayList<RosterGroup>();
         // Loop through all roster groups and find the ones that contain this
         // entry. This algorithm should be fine
-        for (RosterGroup group: roster.getGroups()) {
+        for (RosterGroup group : roster.getGroups()) {
             if (group.contains(this)) {
                 results.add(group);
             }
         }
         return Collections.unmodifiableCollection(results);
     }
-    
+
     public List<String> getGroupNames() {
         List<String> results = new ArrayList<String>();
         // Loop through all roster groups and find the ones that contain this
         // entry. This algorithm should be fine
-        for (RosterGroup group: roster.getGroups()) {
+        for (RosterGroup group : roster.getGroups()) {
             if (group.contains(this)) {
                 results.add(group.getName());
             }
@@ -142,10 +154,10 @@ public class RosterEntry {
 
     /**
      * Returns the roster subscription type of the entry. When the type is
-     * RosterPacket.ItemType.none or RosterPacket.ItemType.from,
-     * refer to {@link RosterEntry getStatus()} to see if a subscription request
-     * is pending.
-     *
+     * RosterPacket.ItemType.none or RosterPacket.ItemType.from, refer to
+     * {@link RosterEntry getStatus()} to see if a subscription request is
+     * pending.
+     * 
      * @return the type.
      */
     public Subscription getSubscription() {
@@ -154,9 +166,9 @@ public class RosterEntry {
 
     /**
      * Returns the roster subscription status of the entry. When the status is
-     * RosterPacket.ItemStatus.SUBSCRIPTION_PENDING, the contact has to answer the
-     * subscription request.
-     *
+     * RosterPacket.ItemStatus.SUBSCRIPTION_PENDING, the contact has to answer
+     * the subscription request.
+     * 
      * @return the status.
      */
     public Ask getAsk() {
@@ -176,7 +188,7 @@ public class RosterEntry {
             RosterGroup group = iter.next();
             buf.append(group.getName());
             while (iter.hasNext()) {
-            buf.append(", ");
+                buf.append(", ");
                 group = iter.next();
                 buf.append(group.getName());
             }
@@ -195,21 +207,23 @@ public class RosterEntry {
             return true;
         }
         if (object != null && object instanceof RosterEntry) {
-            return user.equals(((RosterEntry)object).getUser());
-        }
-        else {
+            return user.equals(((RosterEntry) object).getUser());
+        } else {
             return false;
         }
     }
 
     /**
-     * Indicates whether some other object is "equal to" this by comparing all members.
+     * Indicates whether some other object is "equal to" this by comparing all
+     * members.
      * <p>
-     * The {@link #equals(Object)} method returns <code>true</code> if the user JIDs are equal.
+     * The {@link #equals(Object)} method returns <code>true</code> if the user
+     * JIDs are equal.
      * 
-     * @param obj the reference object with which to compare.
-     * @return <code>true</code> if this object is the same as the obj argument; <code>false</code>
-     *         otherwise.
+     * @param obj
+     *            the reference object with which to compare.
+     * @return <code>true</code> if this object is the same as the obj argument;
+     *         <code>false</code> otherwise.
      */
     public boolean equalsDeep(Object obj) {
         if (this == obj)
@@ -222,26 +236,22 @@ public class RosterEntry {
         if (name == null) {
             if (other.name != null)
                 return false;
-        }
-        else if (!name.equals(other.name))
+        } else if (!name.equals(other.name))
             return false;
         if (ask == null) {
             if (other.ask != null)
                 return false;
-        }
-        else if (!ask.equals(other.ask))
+        } else if (!ask.equals(other.ask))
             return false;
         if (subscription == null) {
             if (other.subscription != null)
                 return false;
-        }
-        else if (!subscription.equals(other.subscription))
+        } else if (!subscription.equals(other.subscription))
             return false;
         if (user == null) {
             if (other.user != null)
                 return false;
-        }
-        else if (!user.equals(other.user))
+        } else if (!user.equals(other.user))
             return false;
         return true;
     }

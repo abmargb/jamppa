@@ -21,28 +21,33 @@ import org.jivesoftware.smack.util.StringUtils;
 import org.xmpp.packet.Packet;
 
 /**
- * Filter for packets where the "from" field exactly matches a specified JID. If the specified
- * address is a bare JID then the filter will match any address whose bare JID matches the
- * specified JID. But if the specified address is a full JID then the filter will only match
- * if the sender of the packet matches the specified resource.
- *
+ * Filter for packets where the "from" field exactly matches a specified JID. If
+ * the specified address is a bare JID then the filter will match any address
+ * whose bare JID matches the specified JID. But if the specified address is a
+ * full JID then the filter will only match if the sender of the packet matches
+ * the specified resource.
+ * 
  * @author Gaston Dombiak
  */
 public class FromMatchesFilter implements PacketFilter {
 
     private String address;
     /**
-     * Flag that indicates if the checking will be done against bare JID addresses or full JIDs.
+     * Flag that indicates if the checking will be done against bare JID
+     * addresses or full JIDs.
      */
     private boolean matchBareJID = false;
 
     /**
-     * Creates a "from" filter using the "from" field part. If the specified address is a bare JID
-     * then the filter will match any address whose bare JID matches the specified JID. But if the
-     * specified address is a full JID then the filter will only match if the sender of the packet
-     * matches the specified resource.
-     *
-     * @param address the from field value the packet must match. Could be a full or bare JID.
+     * Creates a "from" filter using the "from" field part. If the specified
+     * address is a bare JID then the filter will match any address whose bare
+     * JID matches the specified JID. But if the specified address is a full JID
+     * then the filter will only match if the sender of the packet matches the
+     * specified resource.
+     * 
+     * @param address
+     *            the from field value the packet must match. Could be a full or
+     *            bare JID.
      */
     public FromMatchesFilter(String address) {
         if (address == null) {
@@ -55,13 +60,14 @@ public class FromMatchesFilter implements PacketFilter {
     public boolean accept(Packet packet) {
         if (packet.getFrom() == null) {
             return false;
-        }
-        else if (matchBareJID) {
-            // Check if the bare JID of the sender of the packet matches the specified JID
-            return packet.getFrom().toBareJID().toLowerCase().startsWith(address);
-        }
-        else {
-            // Check if the full JID of the sender of the packet matches the specified JID
+        } else if (matchBareJID) {
+            // Check if the bare JID of the sender of the packet matches the
+            // specified JID
+            return packet.getFrom().toBareJID().toLowerCase()
+                    .startsWith(address);
+        } else {
+            // Check if the full JID of the sender of the packet matches the
+            // specified JID
             return address.equals(packet.getFrom().toFullJID().toLowerCase());
         }
     }

@@ -28,18 +28,20 @@ import org.xmpp.packet.Packet;
  */
 public class IQTypeFilter implements PacketFilter {
 
-	private IQ.Type type;
+    private IQ.Type type;
 
-	public IQTypeFilter(IQ.Type type) {
-		this.type = type;
-	}
+    public IQTypeFilter(IQ.Type type) {
+        this.type = type;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.jivesoftware.smack.filter.PacketFilter#accept(org.jivesoftware.smack.packet.Packet)
-	 */
-	public boolean accept(Packet packet) {
-		return (packet instanceof IQ && ((IQ) packet).getType().equals(type));
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.jivesoftware.smack.filter.PacketFilter#accept(org.jivesoftware.smack
+     * .packet.Packet)
+     */
+    public boolean accept(Packet packet) {
+        return (packet instanceof IQ && ((IQ) packet).getType().equals(type));
+    }
 }

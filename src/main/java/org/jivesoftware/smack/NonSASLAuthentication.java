@@ -26,10 +26,10 @@ import org.jivesoftware.smack.packet.Authentication;
 import org.xmpp.packet.IQ;
 
 /**
- * Implementation of JEP-0078: Non-SASL Authentication. Follow the following
- * <a href=http://www.jabber.org/jeps/jep-0078.html>link</a> to obtain more
+ * Implementation of JEP-0078: Non-SASL Authentication. Follow the following <a
+ * href=http://www.jabber.org/jeps/jep-0078.html>link</a> to obtain more
  * information about the JEP.
- *
+ * 
  * @author Gaston Dombiak
  */
 class NonSASLAuthentication implements UserAuthentication {
@@ -41,31 +41,37 @@ class NonSASLAuthentication implements UserAuthentication {
         this.connection = connection;
     }
 
-    public String authenticate(String username, String resource, CallbackHandler cbh) throws XMPPException {
-        //Use the callback handler to determine the password, and continue on.
-        PasswordCallback pcb = new PasswordCallback("Password: ",false);
+    public String authenticate(String username, String resource,
+            CallbackHandler cbh) throws XMPPException {
+        // Use the callback handler to determine the password, and continue on.
+        PasswordCallback pcb = new PasswordCallback("Password: ", false);
         try {
-            cbh.handle(new Callback[]{pcb});
-            return authenticate(username, String.valueOf(pcb.getPassword()),resource);
+            cbh.handle(new Callback[] { pcb });
+            return authenticate(username, String.valueOf(pcb.getPassword()),
+                    resource);
         } catch (Exception e) {
-            throw new XMPPException("Unable to determine password.",e);
-        }   
+            throw new XMPPException("Unable to determine password.", e);
+        }
     }
 
-    public String authenticate(String username, String password, String resource) throws
-            XMPPException {
-        // If we send an authentication packet in "get" mode with just the username,
-        // the server will return the list of authentication protocols it supports.
+    public String authenticate(String username, String password, String resource)
+            throws XMPPException {
+        // If we send an authentication packet in "get" mode with just the
+        // username,
+        // the server will return the list of authentication protocols it
+        // supports.
         Authentication discoveryAuth = new Authentication();
         discoveryAuth.setType(IQ.Type.get);
         discoveryAuth.setUsername(username);
 
-        PacketCollector collector =
-            connection.createPacketCollector(new PacketIDFilter(discoveryAuth.getID()));
+        PacketCollector collector = connection
+                .createPacketCollector(new PacketIDFilter(discoveryAuth.getID()));
         // Send the packet
         connection.sendPacket(discoveryAuth);
-        // Wait up to a certain number of seconds for a response from the server.
-        IQ response = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        // Wait up to a certain number of seconds for a response from the
+        // server.
+        IQ response = (IQ) collector.nextResult(SmackConfiguration
+                .getPacketReplyTimeout());
         if (response == null) {
             throw new XMPPException("No response from the server.");
         }
@@ -84,25 +90,26 @@ class NonSASLAuthentication implements UserAuthentication {
         // Figure out if we should use digest or plain text authentication.
         if (authTypes.getDigest() != null) {
             auth.setDigest(connection.getConnectionID(), password);
-        }
-        else if (authTypes.getPassword() != null) {
+        } else if (authTypes.getPassword() != null) {
             auth.setPassword(password);
-        }
-        else {
-            throw new XMPPException("Server does not support compatible authentication mechanism.");
+        } else {
+            throw new XMPPException(
+                    "Server does not support compatible authentication mechanism.");
         }
 
         auth.setResource(resource);
 
-        collector = connection.createPacketCollector(new PacketIDFilter(auth.getID()));
+        collector = connection.createPacketCollector(new PacketIDFilter(auth
+                .getID()));
         // Send the packet.
         connection.sendPacket(auth);
-        // Wait up to a certain number of seconds for a response from the server.
-        response = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        // Wait up to a certain number of seconds for a response from the
+        // server.
+        response = (IQ) collector.nextResult(SmackConfiguration
+                .getPacketReplyTimeout());
         if (response == null) {
             throw new XMPPException("Authentication failed.");
-        }
-        else if (response.getType() == IQ.Type.error) {
+        } else if (response.getType() == IQ.Type.error) {
             throw new XMPPException(response.getError());
         }
         // We're done with the collector, so explicitly cancel it.
@@ -115,16 +122,17 @@ class NonSASLAuthentication implements UserAuthentication {
         // Create the authentication packet we'll send to the server.
         Authentication auth = new Authentication();
 
-        PacketCollector collector =
-            connection.createPacketCollector(new PacketIDFilter(auth.getID()));
+        PacketCollector collector = connection
+                .createPacketCollector(new PacketIDFilter(auth.getID()));
         // Send the packet.
         connection.sendPacket(auth);
-        // Wait up to a certain number of seconds for a response from the server.
-        IQ response = (IQ) collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        // Wait up to a certain number of seconds for a response from the
+        // server.
+        IQ response = (IQ) collector.nextResult(SmackConfiguration
+                .getPacketReplyTimeout());
         if (response == null) {
             throw new XMPPException("Anonymous login failed.");
-        }
-        else if (response.getType() == IQ.Type.error) {
+        } else if (response.getType() == IQ.Type.error) {
             throw new XMPPException(response.getError());
         }
         // We're done with the collector, so explicitly cancel it.
@@ -132,9 +140,9 @@ class NonSASLAuthentication implements UserAuthentication {
 
         if (response.getTo() != null) {
             return response.getTo().toFullJID();
-        }
-        else {
-            return connection.getServiceName() + "/" + ((Authentication) response).getResource();
+        } else {
+            return connection.getServiceName() + "/"
+                    + ((Authentication) response).getResource();
         }
     }
 }

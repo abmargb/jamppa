@@ -22,7 +22,7 @@ import org.xmpp.packet.Packet;
 
 /**
  * Filters for message packets with a particular thread value.
- *
+ * 
  * @author Matt Tucker
  */
 public class ThreadFilter implements PacketFilter {
@@ -31,8 +31,9 @@ public class ThreadFilter implements PacketFilter {
 
     /**
      * Creates a new thread filter using the specified thread value.
-     *
-     * @param thread the thread value to filter for.
+     * 
+     * @param thread
+     *            the thread value to filter for.
      */
     public ThreadFilter(String thread) {
         if (thread == null) {
@@ -42,6 +43,7 @@ public class ThreadFilter implements PacketFilter {
     }
 
     public boolean accept(Packet packet) {
-        return packet instanceof Message && thread.equals(((Message) packet).getThread());
+        return packet instanceof Message
+                && thread.equals(((Message) packet).getThread());
     }
 }

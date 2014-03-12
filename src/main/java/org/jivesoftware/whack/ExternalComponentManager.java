@@ -38,14 +38,14 @@ import org.xmpp.packet.Packet;
 /**
  * Implementation of the ComponentManager interface for external components.
  * This implementation follows JEP-0014.
- *
+ * 
  * @author Matt Tucker
  */
 public class ExternalComponentManager implements ComponentManager {
 
     /**
-     * Keeps the IP address or hostname of the server. This value will be used only for creating
-     * connections.
+     * Keeps the IP address or hostname of the server. This value will be used
+     * only for creating connections.
      */
     private String host;
     /**
@@ -53,9 +53,9 @@ public class ExternalComponentManager implements ComponentManager {
      */
     private int port;
     /**
-     * Keeps the domain of the XMPP server. The domain may or may not match the host. The domain
-     * will be used mainly for the XMPP packets while the host is used mainly for creating
-     * connections to the server.
+     * Keeps the domain of the XMPP server. The domain may or may not match the
+     * host. The domain will be used mainly for the XMPP packets while the host
+     * is used mainly for creating connections to the server.
      */
     private String domain;
     /**
@@ -63,41 +63,47 @@ public class ExternalComponentManager implements ComponentManager {
      */
     private int connectTimeout = 2000;
     /**
-     * This is a global secret key that will be used during the handshake with the server. If a
-     * secret key was not defined for the specific component then the global secret key will be
-     * used.
+     * This is a global secret key that will be used during the handshake with
+     * the server. If a secret key was not defined for the specific component
+     * then the global secret key will be used.
      */
     private String defaultSecretKey;
     /**
-     * Keeps the secret keys to use for each subdomain. If a key was not found for a specific
-     * subdomain then the global secret key will used for the handshake with the server.
+     * Keeps the secret keys to use for each subdomain. If a key was not found
+     * for a specific subdomain then the global secret key will used for the
+     * handshake with the server.
      */
-    private Map<String, String> secretKeys = new Hashtable<String,String>();
+    private Map<String, String> secretKeys = new Hashtable<String, String>();
     /**
-     * Holds the settings for whether we will tell the XMPP server that a given component can connect
-     * to the same JID multiple times.  This is a custom Openfire extension and will not work
-     * with any other XMPP server. Other servers should ignore this setting.
+     * Holds the settings for whether we will tell the XMPP server that a given
+     * component can connect to the same JID multiple times. This is a custom
+     * Openfire extension and will not work with any other XMPP server. Other
+     * servers should ignore this setting.
      */
-    private Map<String, Boolean> allowMultiple = new Hashtable<String,Boolean>();
+    private Map<String, Boolean> allowMultiple = new Hashtable<String, Boolean>();
 
     /**
-     * Keeps a map that associates a domain with the external component thas is handling the domain.
+     * Keeps a map that associates a domain with the external component thas is
+     * handling the domain.
      */
-    private Map<String, ExternalComponent> componentsByDomain = new Hashtable<String,ExternalComponent>();
+    private Map<String, ExternalComponent> componentsByDomain = new Hashtable<String, ExternalComponent>();
     /**
-     * Keeps a map that associates a component with the wrapping ExternalComponent.
+     * Keeps a map that associates a component with the wrapping
+     * ExternalComponent.
      */
-    private Map<Component, ExternalComponent> components  = new Hashtable<Component,ExternalComponent>();
+    private Map<Component, ExternalComponent> components = new Hashtable<Component, ExternalComponent>();
 
     private static final Logger LOG = Logger.getLogger(ExternalComponent.class);
 
     private Properties properties = new Properties();
-    
+
     /**
-     * Constructs a new ExternalComponentManager that will make connections
-     * to the specified XMPP server on the default port (5222).
-     *
-     * @param host the IP address or name of the XMPP server to connect to (e.g. "example.com").
+     * Constructs a new ExternalComponentManager that will make connections to
+     * the specified XMPP server on the default port (5222).
+     * 
+     * @param host
+     *            the IP address or name of the XMPP server to connect to (e.g.
+     *            "example.com").
      */
     public ExternalComponentManager(String host) {
         this(host, 5225);
@@ -106,13 +112,17 @@ public class ExternalComponentManager implements ComponentManager {
     /**
      * Constructs a new ExternalComponentManager that will make connections to
      * the specified XMPP server on the given port.
-     *
-     * @param host the IP address or name of the XMPP server to connect to (e.g. "example.com").
-     * @param port the port to connect on.
+     * 
+     * @param host
+     *            the IP address or name of the XMPP server to connect to (e.g.
+     *            "example.com").
+     * @param port
+     *            the port to connect on.
      */
     public ExternalComponentManager(String host, int port) {
         if (host == null) {
-            throw new IllegalArgumentException("Host of XMPP server cannot be null");
+            throw new IllegalArgumentException(
+                    "Host of XMPP server cannot be null");
         }
         this.host = host;
         this.port = port;
@@ -124,21 +134,24 @@ public class ExternalComponentManager implements ComponentManager {
     /**
      * Sets a secret key for a sub-domain, for future use by a component
      * connecting to the server. Keys are used as an authentication mechanism
-     * when connecting to the server. Some servers may require a different
-     * key for each component, while others may use a global secret key.
-     *
-     * @param subdomain the sub-domain.
-     * @param secretKey the secret key
+     * when connecting to the server. Some servers may require a different key
+     * for each component, while others may use a global secret key.
+     * 
+     * @param subdomain
+     *            the sub-domain.
+     * @param secretKey
+     *            the secret key
      */
     public void setSecretKey(String subdomain, String secretKey) {
         secretKeys.put(subdomain, secretKey);
     }
 
     /**
-     * Returns the secret key for a sub-domain. If no key was found then the default secret key
-     * will be returned.
-     *
-     * @param subdomain the subdomain to return its secret key.
+     * Returns the secret key for a sub-domain. If no key was found then the
+     * default secret key will be returned.
+     * 
+     * @param subdomain
+     *            the subdomain to return its secret key.
      * @return the secret key for a sub-domain.
      */
     public String getSecretKey(String subdomain) {
@@ -152,23 +165,25 @@ public class ExternalComponentManager implements ComponentManager {
 
     /**
      * Sets the default secret key, which will be used when connecting if a
-     * specific secret key for the component hasn't been sent. Keys are used
-     * as an authentication mechanism when connecting to the server. Some servers
-     * may require a different key for each component, while others may use
-     * a global secret key.
-     *
-     * @param secretKey the default secret key.
+     * specific secret key for the component hasn't been sent. Keys are used as
+     * an authentication mechanism when connecting to the server. Some servers
+     * may require a different key for each component, while others may use a
+     * global secret key.
+     * 
+     * @param secretKey
+     *            the default secret key.
      */
     public void setDefaultSecretKey(String secretKey) {
         this.defaultSecretKey = secretKey;
     }
 
     /**
-     * Returns if we want components to be able to connect multiple times to the same JID.  This is a custom
-     * Openfire extension and will not work with any other XMPP server. Other XMPP servers should ignore
-     * this extra setting.
-     *
-     * @param subdomain the sub-domain.
+     * Returns if we want components to be able to connect multiple times to the
+     * same JID. This is a custom Openfire extension and will not work with any
+     * other XMPP server. Other XMPP servers should ignore this extra setting.
+     * 
+     * @param subdomain
+     *            the sub-domain.
      * @return True or false if we are allowing multiple connections.
      */
     public boolean isMultipleAllowed(String subdomain) {
@@ -177,33 +192,40 @@ public class ExternalComponentManager implements ComponentManager {
     }
 
     /**
-     * Sets whether we will tell the XMPP server that we want multiple components to be able to connect
-     * to the same JID.  This is a custom Openfire extension and will not work with any other XMPP server.
-     * Other XMPP servers should ignore this extra setting.
-     *
-     * @param subdomain the sub-domain.
-     * @param allowMultiple Set to true if we want to allow multiple connections to same JID.
+     * Sets whether we will tell the XMPP server that we want multiple
+     * components to be able to connect to the same JID. This is a custom
+     * Openfire extension and will not work with any other XMPP server. Other
+     * XMPP servers should ignore this extra setting.
+     * 
+     * @param subdomain
+     *            the sub-domain.
+     * @param allowMultiple
+     *            Set to true if we want to allow multiple connections to same
+     *            JID.
      */
     public void setMultipleAllowed(String subdomain, boolean allowMultiple) {
         this.allowMultiple.put(subdomain, allowMultiple);
     }
 
-    public void addComponent(String subdomain, Component component) throws ComponentException {
+    public void addComponent(String subdomain, Component component)
+            throws ComponentException {
         addComponent(subdomain, component, this.port);
     }
 
-    public void addComponent(String subdomain, Component component, Integer port) throws ComponentException {
+    public void addComponent(String subdomain, Component component, Integer port)
+            throws ComponentException {
         if (componentsByDomain.containsKey(subdomain)) {
             if (componentsByDomain.get(subdomain).getComponent() == component) {
                 // Do nothing since the component has already been registered
                 return;
-            }
-            else {
-                throw new IllegalArgumentException("Subdomain already in use by another component");
+            } else {
+                throw new IllegalArgumentException(
+                        "Subdomain already in use by another component");
             }
         }
         // Create a wrapping ExternalComponent on the component
-        ExternalComponent externalComponent = new ExternalComponent(component, this);
+        ExternalComponent externalComponent = new ExternalComponent(component,
+                this);
         try {
             // Register the new component
             componentsByDomain.put(subdomain, externalComponent);
@@ -211,7 +233,8 @@ public class ExternalComponentManager implements ComponentManager {
             // Ask the ExternalComponent to connect with the remote server
             externalComponent.connect(host, port, subdomain);
             // Initialize the component
-            JID componentJID = new JID(null, externalComponent.getDomain(), null);
+            JID componentJID = new JID(null, externalComponent.getDomain(),
+                    null);
             externalComponent.initialize(componentJID, this);
         } catch (ComponentException e) {
             // Unregister the new component
@@ -225,7 +248,8 @@ public class ExternalComponentManager implements ComponentManager {
     }
 
     public void removeComponent(String subdomain) throws ComponentException {
-        ExternalComponent externalComponent = componentsByDomain.remove(subdomain);
+        ExternalComponent externalComponent = componentsByDomain
+                .remove(subdomain);
         if (externalComponent != null) {
             components.remove(externalComponent.getComponent());
             externalComponent.shutdown();
@@ -233,23 +257,26 @@ public class ExternalComponentManager implements ComponentManager {
     }
 
     public void sendPacket(Component component, Packet packet) {
-        // Get the ExternalComponent that is wrapping the specified component and ask it to
+        // Get the ExternalComponent that is wrapping the specified component
+        // and ask it to
         // send the packet
         components.get(component).send(packet);
     }
 
-    public IQ query(Component component, IQ packet, long timeout) throws ComponentException {
+    public IQ query(Component component, IQ packet, long timeout)
+            throws ComponentException {
         final LinkedBlockingQueue<IQ> answer = new LinkedBlockingQueue<IQ>(8);
         ExternalComponent externalComponent = components.get(component);
-        externalComponent.addIQResultListener(packet.getID(), new IQResultListener() {
-            public void receivedAnswer(IQ packet) {
-                answer.offer(packet);
-            }
+        externalComponent.addIQResultListener(packet.getID(),
+                new IQResultListener() {
+                    public void receivedAnswer(IQ packet) {
+                        answer.offer(packet);
+                    }
 
-            public void answerTimeout(String packetId) {
-                //Do nothing
-            }
-        }, timeout);
+                    public void answerTimeout(String packetId) {
+                        // Do nothing
+                    }
+                }, timeout);
         sendPacket(component, packet);
         IQ reply = null;
         try {
@@ -260,31 +287,33 @@ public class ExternalComponentManager implements ComponentManager {
         return reply;
     }
 
-    public void query(Component component, IQ packet, IQResultListener listener) throws ComponentException {
+    public void query(Component component, IQ packet, IQResultListener listener)
+            throws ComponentException {
         ExternalComponent externalComponent = components.get(component);
         // Add listenet with a timeout of 5 minutes to prevent memory leaks
         externalComponent.addIQResultListener(packet.getID(), listener, 300000);
         sendPacket(component, packet);
     }
 
-
     /**
-     * Sets the domain of the XMPP server. The domain may or may not match the host. The domain
-     * will be used mainly for the XMPP packets while the host is used mainly for creating
-     * connections to the server.
-     *
-     * @param domain the domain of the XMPP server.
+     * Sets the domain of the XMPP server. The domain may or may not match the
+     * host. The domain will be used mainly for the XMPP packets while the host
+     * is used mainly for creating connections to the server.
+     * 
+     * @param domain
+     *            the domain of the XMPP server.
      */
     public void setServerName(String domain) {
         this.domain = domain;
     }
 
     /**
-     * Returns the domain of the XMPP server where we are connected to or <tt>null</tt> if
-     * this value was never configured. When the value is null then the component will
-     * register with just its subdomain and we expect the server to accept the component and
-     * append its domain to form the JID of the component.
-     *
+     * Returns the domain of the XMPP server where we are connected to or
+     * <tt>null</tt> if this value was never configured. When the value is null
+     * then the component will register with just its subdomain and we expect
+     * the server to accept the component and append its domain to form the JID
+     * of the component.
+     * 
      * @return the domain of the XMPP server or null if never configured.
      */
     public String getServerName() {
@@ -292,9 +321,9 @@ public class ExternalComponentManager implements ComponentManager {
     }
 
     /**
-     * Returns the timeout (in milliseconds) to use when trying to connect to the server.
-     * The default value is 2 seconds.
-     *
+     * Returns the timeout (in milliseconds) to use when trying to connect to
+     * the server. The default value is 2 seconds.
+     * 
      * @return the timeout to use when trying to connect to the server.
      */
     public int getConnectTimeout() {
@@ -302,10 +331,12 @@ public class ExternalComponentManager implements ComponentManager {
     }
 
     /**
-     * Sets the timeout (in milliseconds) to use when trying to connect to the server.
-     * The default value is 2 seconds.
-     *
-     * @param connectTimeout the timeout, in milliseconds, to use when trying to connect to the server.
+     * Sets the timeout (in milliseconds) to use when trying to connect to the
+     * server. The default value is 2 seconds.
+     * 
+     * @param connectTimeout
+     *            the timeout, in milliseconds, to use when trying to connect to
+     *            the server.
      */
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
@@ -319,20 +350,20 @@ public class ExternalComponentManager implements ComponentManager {
         return LOG;
     }
 
-	@Override
-	public void query(Component component, IQ packet,
-			org.xmpp.component.IQResultListener listener)
-			throws ComponentException {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void query(Component component, IQ packet,
+            org.xmpp.component.IQResultListener listener)
+            throws ComponentException {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public String getProperty(String name) {
-		return properties.getProperty(name);
-	}
+    @Override
+    public String getProperty(String name) {
+        return properties.getProperty(name);
+    }
 
-	@Override
-	public void setProperty(String name, String value) {
-		properties.setProperty(name, value);
-	}
+    @Override
+    public void setProperty(String name, String value) {
+        properties.setProperty(name, value);
+    }
 }

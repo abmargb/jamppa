@@ -20,8 +20,10 @@ package org.jivesoftware.smack.parsing;
 import org.jivesoftware.smack.ConnectionListener;
 
 /**
- * Parsing exception callback class that simply throws the encountered parsing exception. This usually leads to an
- * {@link ConnectionListener#connectionClosedOnError(Exception)} disconnect of the connection.
+ * Parsing exception callback class that simply throws the encountered parsing
+ * exception. This usually leads to an
+ * {@link ConnectionListener#connectionClosedOnError(Exception)} disconnect of
+ * the connection.
  * 
  * @author Florian Schmaus
  * 
@@ -29,7 +31,8 @@ import org.jivesoftware.smack.ConnectionListener;
 public class ExceptionThrowingCallback extends ParsingExceptionCallback {
 
     @Override
-    public void handleUnparsablePacket(UnparsablePacket packetData) throws Exception {
+    public void handleUnparsablePacket(UnparsablePacket packetData)
+            throws Exception {
         throw packetData.getParsingException();
     }
 }

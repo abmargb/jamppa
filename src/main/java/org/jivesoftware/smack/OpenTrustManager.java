@@ -22,9 +22,9 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 /**
- * Dummy trust manager that trust all certificates presented by the server. This class
- * is used during old SSL connections.
- *
+ * Dummy trust manager that trust all certificates presented by the server. This
+ * class is used during old SSL connections.
+ * 
  * @author Gaston Dombiak
  */
 class OpenTrustManager implements X509TrustManager {

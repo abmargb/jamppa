@@ -28,21 +28,21 @@ import org.jivesoftware.smack.parsing.ParsingExceptionCallback;
 /**
  * Represents the configuration of Smack. The configuration is used for:
  * <ul>
- *      <li> Initializing classes by loading them at start-up.
- *      <li> Getting the current Smack version.
- *      <li> Getting and setting global library behavior, such as the period of time
- *          to wait for replies to packets from the server. Note: setting these values
- *          via the API will override settings in the configuration file.
+ * <li>Initializing classes by loading them at start-up.
+ * <li>Getting the current Smack version.
+ * <li>Getting and setting global library behavior, such as the period of time
+ * to wait for replies to packets from the server. Note: setting these values
+ * via the API will override settings in the configuration file.
  * </ul>
- *
- * Configuration settings are stored in META-INF/smack-config.xml (typically inside the
- * smack.jar file).
+ * 
+ * Configuration settings are stored in META-INF/smack-config.xml (typically
+ * inside the smack.jar file).
  * 
  * @author Gaston Dombiak
  */
 public final class SmackConfiguration {
     private static final String SMACK_VERSION = "3.4.0";
-    
+
     private static int packetReplyTimeout = 5000;
     private static int keepAliveInterval = 30000;
     private static List<String> defaultMechs = new ArrayList<String>();
@@ -50,17 +50,19 @@ public final class SmackConfiguration {
     private static boolean localSocks5ProxyEnabled = true;
     private static int localSocks5ProxyPort = 7777;
     private static int packetCollectorSize = 5000;
-    
+
     private static boolean initialized = false;
 
     /**
-     * The default parsing exception callback is {@link ExceptionThrowingCallback} which will
-     * throw an exception and therefore disconnect the active connection.
+     * The default parsing exception callback is
+     * {@link ExceptionThrowingCallback} which will throw an exception and
+     * therefore disconnect the active connection.
      */
     private static ParsingExceptionCallback defaultCallback = new ExceptionThrowingCallback();
 
     /**
-     * This automatically enables EntityCaps for new connections if it is set to true
+     * This automatically enables EntityCaps for new connections if it is set to
+     * true
      */
     private static boolean autoEnableEntityCaps = true;
 
@@ -68,13 +70,14 @@ public final class SmackConfiguration {
     }
 
     /**
-     * Loads the configuration from the smack-config.xml file.<p>
+     * Loads the configuration from the smack-config.xml file.
+     * <p>
      * 
-     * So far this means that:
-     * 1) a set of classes will be loaded in order to execute their static init block
-     * 2) retrieve and set the current Smack release
+     * So far this means that: 1) a set of classes will be loaded in order to
+     * execute their static init block 2) retrieve and set the current Smack
+     * release
      */
-    
+
     /**
      * Returns the Smack version information, eg "1.3.0".
      * 
@@ -85,15 +88,16 @@ public final class SmackConfiguration {
     }
 
     /**
-     * Returns the number of milliseconds to wait for a response from
-     * the server. The default value is 5000 ms.
+     * Returns the number of milliseconds to wait for a response from the
+     * server. The default value is 5000 ms.
      * 
      * @return the milliseconds to wait for a response from the server
      */
     public static int getPacketReplyTimeout() {
         initialize();
-        
-        // The timeout value must be greater than 0 otherwise we will answer the default value
+
+        // The timeout value must be greater than 0 otherwise we will answer the
+        // default value
         if (packetReplyTimeout <= 0) {
             packetReplyTimeout = 5000;
         }
@@ -101,10 +105,10 @@ public final class SmackConfiguration {
     }
 
     /**
-     * Sets the number of milliseconds to wait for a response from
-     * the server.
+     * Sets the number of milliseconds to wait for a response from the server.
      * 
-     * @param timeout the milliseconds to wait for a response from the server
+     * @param timeout
+     *            the milliseconds to wait for a response from the server
      */
     public static void setPacketReplyTimeout(int timeout) {
         initialize();
@@ -117,11 +121,11 @@ public final class SmackConfiguration {
 
     /**
      * Returns the number of milleseconds delay between sending keep-alive
-     * requests to the server. The default value is 30000 ms. A value of -1
-     * mean no keep-alive requests will be sent to the server.
-     *
-     * @return the milliseconds to wait between keep-alive requests, or -1 if
-     *      no keep-alive should be sent.
+     * requests to the server. The default value is 30000 ms. A value of -1 mean
+     * no keep-alive requests will be sent to the server.
+     * 
+     * @return the milliseconds to wait between keep-alive requests, or -1 if no
+     *         keep-alive should be sent.
      */
     public static int getKeepAliveInterval() {
         initialize();
@@ -129,12 +133,13 @@ public final class SmackConfiguration {
     }
 
     /**
-     * Sets the number of milleseconds delay between sending keep-alive
-     * requests to the server. The default value is 30000 ms. A value of -1
-     * mean no keep-alive requests will be sent to the server.
-     *
-     * @param interval the milliseconds to wait between keep-alive requests,
-     *      or -1 if no keep-alive should be sent.
+     * Sets the number of milleseconds delay between sending keep-alive requests
+     * to the server. The default value is 30000 ms. A value of -1 mean no
+     * keep-alive requests will be sent to the server.
+     * 
+     * @param interval
+     *            the milliseconds to wait between keep-alive requests, or -1 if
+     *            no keep-alive should be sent.
      */
     public static void setKeepAliveInterval(int interval) {
         initialize();
@@ -142,67 +147,72 @@ public final class SmackConfiguration {
     }
 
     /**
-     * Gets the default max size of a packet collector before it will delete 
-     * the older packets.
+     * Gets the default max size of a packet collector before it will delete the
+     * older packets.
      * 
      * @return The number of packets to queue before deleting older packets.
      */
     public static int getPacketCollectorSize() {
         initialize();
-    	return packetCollectorSize;
+        return packetCollectorSize;
     }
 
     /**
-     * Sets the default max size of a packet collector before it will delete 
-     * the older packets.
+     * Sets the default max size of a packet collector before it will delete the
+     * older packets.
      * 
-     * @param The number of packets to queue before deleting older packets.
+     * @param The
+     *            number of packets to queue before deleting older packets.
      */
     public static void setPacketCollectorSize(int collectorSize) {
         initialize();
-    	packetCollectorSize = collectorSize;
+        packetCollectorSize = collectorSize;
     }
-    
+
     /**
      * Add a SASL mechanism to the list to be used.
-     *
-     * @param mech the SASL mechanism to be added
+     * 
+     * @param mech
+     *            the SASL mechanism to be added
      */
     public static void addSaslMech(String mech) {
         initialize();
 
-        if(! defaultMechs.contains(mech) ) {
+        if (!defaultMechs.contains(mech)) {
             defaultMechs.add(mech);
         }
     }
 
-   /**
+    /**
      * Add a Collection of SASL mechanisms to the list to be used.
-     *
-     * @param mechs the Collection of SASL mechanisms to be added
+     * 
+     * @param mechs
+     *            the Collection of SASL mechanisms to be added
      */
     public static void addSaslMechs(Collection<String> mechs) {
         initialize();
 
-        for(String mech : mechs) {
+        for (String mech : mechs) {
             addSaslMech(mech);
         }
     }
 
     /**
      * Remove a SASL mechanism from the list to be used.
-     *
-     * @param mech the SASL mechanism to be removed
+     * 
+     * @param mech
+     *            the SASL mechanism to be removed
      */
     public static void removeSaslMech(String mech) {
         initialize();
         defaultMechs.remove(mech);
     }
 
-   /**
+    /**
      * Remove a Collection of SASL mechanisms to the list to be used.
-     *
-     * @param mechs the Collection of SASL mechanisms to be removed
+     * 
+     * @param mechs
+     *            the Collection of SASL mechanisms to be removed
      */
     public static void removeSaslMechs(Collection<String> mechs) {
         initialize();
@@ -213,7 +223,7 @@ public final class SmackConfiguration {
      * Returns the list of SASL mechanisms to be used. If a SASL mechanism is
      * listed here it does not guarantee it will be used. The server may not
      * support it, or it may not be implemented.
-     *
+     * 
      * @return the list of SASL mechanisms to be used.
      */
     public static List<String> getSaslMechs() {
@@ -221,7 +231,8 @@ public final class SmackConfiguration {
     }
 
     /**
-     * Returns true if the local Socks5 proxy should be started. Default is true.
+     * Returns true if the local Socks5 proxy should be started. Default is
+     * true.
      * 
      * @return if the local Socks5 proxy should be started
      */
@@ -233,9 +244,11 @@ public final class SmackConfiguration {
     /**
      * Sets if the local Socks5 proxy should be started. Default is true.
      * 
-     * @param localSocks5ProxyEnabled if the local Socks5 proxy should be started
+     * @param localSocks5ProxyEnabled
+     *            if the local Socks5 proxy should be started
      */
-    public static void setLocalSocks5ProxyEnabled(boolean localSocks5ProxyEnabled) {
+    public static void setLocalSocks5ProxyEnabled(
+            boolean localSocks5ProxyEnabled) {
         initialize();
         SmackConfiguration.localSocks5ProxyEnabled = localSocks5ProxyEnabled;
     }
@@ -251,10 +264,12 @@ public final class SmackConfiguration {
     }
 
     /**
-     * Sets the port of the local Socks5 proxy. Default is 7777. If you set the port to a negative
-     * value Smack tries the absolute value and all following until it finds an open port.
+     * Sets the port of the local Socks5 proxy. Default is 7777. If you set the
+     * port to a negative value Smack tries the absolute value and all following
+     * until it finds an open port.
      * 
-     * @param localSocks5ProxyPort the port of the local Socks5 proxy to set
+     * @param localSocks5ProxyPort
+     *            the port of the local Socks5 proxy to set
      */
     public static void setLocalSocks5ProxyPort(int localSocks5ProxyPort) {
         initialize();
@@ -263,6 +278,7 @@ public final class SmackConfiguration {
 
     /**
      * Check if Entity Caps are enabled as default for every new connection
+     * 
      * @return
      */
     public static boolean autoEnableEntityCaps() {
@@ -281,12 +297,14 @@ public final class SmackConfiguration {
     }
 
     /**
-     * Set the default parsing exception callback for all newly created connections
-     *
+     * Set the default parsing exception callback for all newly created
+     * connections
+     * 
      * @param callback
      * @see ParsingExceptionCallback
      */
-    public static void setDefaultParsingExceptionCallback(ParsingExceptionCallback callback) {
+    public static void setDefaultParsingExceptionCallback(
+            ParsingExceptionCallback callback) {
         initialize();
         defaultCallback = callback;
     }
@@ -303,7 +321,8 @@ public final class SmackConfiguration {
     }
 
     /*
-     * Order of precedence for config file is VM arg, setConfigXXX methods and embedded default file location.
+     * Order of precedence for config file is VM arg, setConfigXXX methods and
+     * embedded default file location.
      */
     private static void initialize() {
         if (initialized) {

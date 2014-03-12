@@ -24,22 +24,24 @@ import org.jivesoftware.smack.packet.StreamError;
 import org.xmpp.packet.PacketError;
 
 /**
- * A generic exception that is thrown when an error occurs performing an
- * XMPP operation. XMPP servers can respond to error conditions with an error code
- * and textual description of the problem, which are encapsulated in the XMPPError
- * class. When appropriate, an XMPPError instance is attached instances of this exception.<p>
- *
- * When a stream error occured, the server will send a stream error to the client before
- * closing the connection. Stream errors are unrecoverable errors. When a stream error
- * is sent to the client an XMPPException will be thrown containing the StreamError sent
- * by the server.
- *
+ * A generic exception that is thrown when an error occurs performing an XMPP
+ * operation. XMPP servers can respond to error conditions with an error code
+ * and textual description of the problem, which are encapsulated in the
+ * XMPPError class. When appropriate, an XMPPError instance is attached
+ * instances of this exception.
+ * <p>
+ * 
+ * When a stream error occured, the server will send a stream error to the
+ * client before closing the connection. Stream errors are unrecoverable errors.
+ * When a stream error is sent to the client an XMPPException will be thrown
+ * containing the StreamError sent by the server.
+ * 
  * @see XMPPError
  * @author Matt Tucker
  */
 public class XMPPException extends Exception {
     private static final long serialVersionUID = 6881651633890968625L;
-    
+
     private StreamError streamError = null;
     private PacketError error = null;
     private Throwable wrappedThrowable = null;
@@ -54,8 +56,9 @@ public class XMPPException extends Exception {
 
     /**
      * Creates a new XMPPException with a description of the exception.
-     *
-     * @param message description of the exception.
+     * 
+     * @param message
+     *            description of the exception.
      */
     public XMPPException(String message) {
         super(message);
@@ -63,8 +66,9 @@ public class XMPPException extends Exception {
 
     /**
      * Creates a new XMPPException with a Smack specific error code.
-     *
-     * @param code the root cause of the exception.
+     * 
+     * @param code
+     *            the root cause of the exception.
      */
     public XMPPException(SmackError code) {
         super(code.getErrorMessage());
@@ -72,10 +76,11 @@ public class XMPPException extends Exception {
     }
 
     /**
-     * Creates a new XMPPException with the Throwable that was the root cause of the
-     * exception.
-     *
-     * @param wrappedThrowable the root cause of the exception.
+     * Creates a new XMPPException with the Throwable that was the root cause of
+     * the exception.
+     * 
+     * @param wrappedThrowable
+     *            the root cause of the exception.
      */
     public XMPPException(Throwable wrappedThrowable) {
         super();
@@ -83,11 +88,12 @@ public class XMPPException extends Exception {
     }
 
     /**
-     * Creates a new XMPPException with the stream error that was the root case of the
-     * exception. When a stream error is received from the server then the underlying
-     * TCP connection will be closed by the server.
-     *
-     * @param streamError the root cause of the exception.
+     * Creates a new XMPPException with the stream error that was the root case
+     * of the exception. When a stream error is received from the server then
+     * the underlying TCP connection will be closed by the server.
+     * 
+     * @param streamError
+     *            the root cause of the exception.
      */
     public XMPPException(StreamError streamError) {
         super();
@@ -95,10 +101,11 @@ public class XMPPException extends Exception {
     }
 
     /**
-     * Cretaes a new XMPPException with the XMPPError that was the root case of the
-     * exception.
-     *
-     * @param error the root cause of the exception.
+     * Cretaes a new XMPPException with the XMPPError that was the root case of
+     * the exception.
+     * 
+     * @param error
+     *            the root cause of the exception.
      */
     public XMPPException(PacketError error) {
         super();
@@ -108,9 +115,11 @@ public class XMPPException extends Exception {
     /**
      * Creates a new XMPPException with a description of the exception and the
      * Throwable that was the root cause of the exception.
-     *
-     * @param message a description of the exception.
-     * @param wrappedThrowable the root cause of the exception.
+     * 
+     * @param message
+     *            a description of the exception.
+     * @param wrappedThrowable
+     *            the root cause of the exception.
      */
     public XMPPException(String message, Throwable wrappedThrowable) {
         super(message);
@@ -118,14 +127,18 @@ public class XMPPException extends Exception {
     }
 
     /**
-     * Creates a new XMPPException with a description of the exception, an XMPPError,
-     * and the Throwable that was the root cause of the exception.
-     *
-     * @param message a description of the exception.
-     * @param error the root cause of the exception.
-     * @param wrappedThrowable the root cause of the exception.
+     * Creates a new XMPPException with a description of the exception, an
+     * XMPPError, and the Throwable that was the root cause of the exception.
+     * 
+     * @param message
+     *            a description of the exception.
+     * @param error
+     *            the root cause of the exception.
+     * @param wrappedThrowable
+     *            the root cause of the exception.
      */
-    public XMPPException(String message, PacketError error, Throwable wrappedThrowable) {
+    public XMPPException(String message, PacketError error,
+            Throwable wrappedThrowable) {
         super(message);
         this.error = error;
         this.wrappedThrowable = wrappedThrowable;
@@ -134,19 +147,21 @@ public class XMPPException extends Exception {
     /**
      * Creates a new XMPPException with a description of the exception and the
      * XMPPException that was the root cause of the exception.
-     *
-     * @param message a description of the exception.
-     * @param error the root cause of the exception.
+     * 
+     * @param message
+     *            a description of the exception.
+     * @param error
+     *            the root cause of the exception.
      */
     public XMPPException(String message, PacketError error) {
         super(message);
         this.error = error;
     }
 
-	/**
-     * Returns the XMPPError asscociated with this exception, or <tt>null</tt> if there
-     * isn't one.
-     *
+    /**
+     * Returns the XMPPError asscociated with this exception, or <tt>null</tt>
+     * if there isn't one.
+     * 
      * @return the XMPPError asscociated with this exception.
      */
     public PacketError getXMPPError() {
@@ -154,9 +169,9 @@ public class XMPPException extends Exception {
     }
 
     /**
-     * Returns the SmackError asscociated with this exception, or <tt>null</tt> if there
-     * isn't one.
-     *
+     * Returns the SmackError asscociated with this exception, or <tt>null</tt>
+     * if there isn't one.
+     * 
      * @return the SmackError asscociated with this exception.
      */
     public SmackError getSmackError() {
@@ -164,10 +179,10 @@ public class XMPPException extends Exception {
     }
 
     /**
-     * Returns the StreamError asscociated with this exception, or <tt>null</tt> if there
-     * isn't one. The underlying TCP connection is closed by the server after sending the
-     * stream error to the client.
-     *
+     * Returns the StreamError asscociated with this exception, or <tt>null</tt>
+     * if there isn't one. The underlying TCP connection is closed by the server
+     * after sending the stream error to the client.
+     * 
      * @return the StreamError asscociated with this exception.
      */
     public StreamError getStreamError() {
@@ -175,9 +190,9 @@ public class XMPPException extends Exception {
     }
 
     /**
-     * Returns the Throwable asscociated with this exception, or <tt>null</tt> if there
-     * isn't one.
-     *
+     * Returns the Throwable asscociated with this exception, or <tt>null</tt>
+     * if there isn't one.
+     * 
      * @return the Throwable asscociated with this exception.
      */
     public Throwable getWrappedThrowable() {
@@ -210,8 +225,7 @@ public class XMPPException extends Exception {
         // XMPPError as the message.
         if (msg == null && error != null) {
             return error.toString();
-        }
-        else if (msg == null && streamError != null) {
+        } else if (msg == null && streamError != null) {
             return streamError.toString();
         }
         return msg;

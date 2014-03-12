@@ -13,19 +13,19 @@
  */
 package org.jivesoftware.smack.util;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * Base32 string encoding is useful for when filenames case-insensitive filesystems are encoded.
- * Base32 representation takes roughly 20% more space then Base64.
+ * Base32 string encoding is useful for when filenames case-insensitive
+ * filesystems are encoded. Base32 representation takes roughly 20% more space
+ * then Base64.
  * 
- * @author Florian Schmaus
- * Based on code by Brian Wellington (bwelling@xbill.org)
+ * @author Florian Schmaus Based on code by Brian Wellington
+ *         (bwelling@xbill.org)
  * @see <a href="http://en.wikipedia.org/wiki/Base32">Base32 Wikipedia entry<a>
- *
+ * 
  */
 public class Base32Encoder implements StringEncoder {
 

@@ -27,7 +27,9 @@ public abstract class XMPPInputOutputStream {
 
     public abstract boolean isSupported();
 
-    public abstract InputStream getInputStream(InputStream inputStream) throws Exception;
+    public abstract InputStream getInputStream(InputStream inputStream)
+            throws Exception;
 
-    public abstract OutputStream getOutputStream(OutputStream outputStream) throws Exception;
+    public abstract OutputStream getOutputStream(OutputStream outputStream)
+            throws Exception;
 }

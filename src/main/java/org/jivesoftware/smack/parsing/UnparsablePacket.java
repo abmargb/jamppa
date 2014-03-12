@@ -17,12 +17,11 @@
 
 package org.jivesoftware.smack.parsing;
 
-
 /**
  * Representation of an unparsable packet.
  * 
  * @author Florian Schmaus
- *
+ * 
  */
 public class UnparsablePacket {
     private final String content;

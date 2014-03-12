@@ -23,7 +23,7 @@ import javax.security.auth.callback.CallbackHandler;
 
 /**
  * Implementation of the SASL ANONYMOUS mechanism
- *
+ * 
  * @author Jay Kline
  */
 public class SASLAnonymous extends SASLMechanism {
@@ -36,11 +36,13 @@ public class SASLAnonymous extends SASLMechanism {
         return "ANONYMOUS";
     }
 
-    public void authenticate(String username, String host, CallbackHandler cbh) throws IOException {
+    public void authenticate(String username, String host, CallbackHandler cbh)
+            throws IOException {
         authenticate();
     }
 
-    public void authenticate(String username, String host, String password) throws IOException {
+    public void authenticate(String username, String host, String password)
+            throws IOException {
         authenticate();
     }
 
@@ -54,6 +56,5 @@ public class SASLAnonymous extends SASLMechanism {
         // and send the authentication to the server
         getSASLAuthentication().send(new Response());
     }
-
 
 }

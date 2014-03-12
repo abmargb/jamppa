@@ -19,47 +19,68 @@ import java.util.Collection;
 import org.xmpp.packet.Roster;
 
 /**
- * This is an interface for persistent roster store needed to implement
- * roster versioning as per RFC 6121.
+ * This is an interface for persistent roster store needed to implement roster
+ * versioning as per RFC 6121.
  */
 
 public interface RosterStore {
 
     /**
-     * This method returns a collection of all roster items contained in this store.
+     * This method returns a collection of all roster items contained in this
+     * store.
+     * 
      * @return List of {@link RosterEntry}
      */
     public Collection<Roster.Item> getEntries();
+
     /**
      * This method returns the roster item in this store for the given JID.
-     * @param bareJid The bare JID of the RosterEntry
+     * 
+     * @param bareJid
+     *            The bare JID of the RosterEntry
      * @return The {@link RosterEntry} which belongs to that user
      */
     public Roster.Item getEntry(String bareJid);
+
     /**
-     * This method returns the version number as specified by the "ver" attribute
-     * of the local store. For a fresh store, this MUST be the empty string.
+     * This method returns the version number as specified by the "ver"
+     * attribute of the local store. For a fresh store, this MUST be the empty
+     * string.
+     * 
      * @return local roster version
      */
     public String getRosterVersion();
+
     /**
-     * This method stores a new roster entry in this store or updates an existing one.
-     * @param item the entry to store
-     * @param version the new roster version
+     * This method stores a new roster entry in this store or updates an
+     * existing one.
+     * 
+     * @param item
+     *            the entry to store
+     * @param version
+     *            the new roster version
      * @return True if successful
      */
     public boolean addEntry(Roster.Item item, String version);
+
     /**
      * This method updates the store so that it contains only the given entries.
-     * @param items the entries to store
-     * @param version the new roster version
+     * 
+     * @param items
+     *            the entries to store
+     * @param version
+     *            the new roster version
      * @return True if successful
      */
     public boolean resetEntries(Collection<Roster.Item> items, String version);
+
     /**
      * Removes an entry from the store
-     * @param bareJid The bare JID of the entry to be removed
-     * @param version the new roster version
+     * 
+     * @param bareJid
+     *            The bare JID of the entry to be removed
+     * @param version
+     *            the new roster version
      * @return True if successful
      */
     public boolean removeEntry(String bareJid, String version);

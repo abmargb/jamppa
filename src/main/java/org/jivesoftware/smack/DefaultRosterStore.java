@@ -38,9 +38,9 @@ import org.xmpp.packet.Roster.Item;
 import org.xmpp.packet.Roster.Subscription;
 
 /**
- * Stores roster entries as specified by RFC 6121 for roster versioning
- * in a set of files.
- *
+ * Stores roster entries as specified by RFC 6121 for roster versioning in a set
+ * of files.
+ * 
  * @author Lars Noschinski
  * @author Fabian Schuetz
  */
@@ -75,10 +75,10 @@ public class DefaultRosterStore implements RosterStore {
 
     /**
      * Creates a new roster store on disk
-     *
+     * 
      * @param baseDir
-     *            The directory to create the store in. The directory should
-     *            be empty
+     *            The directory to create the store in. The directory should be
+     *            empty
      * @return A {@link DefaultRosterStore} instance if successful,
      *         <code>null</code> else.
      */
@@ -86,14 +86,14 @@ public class DefaultRosterStore implements RosterStore {
         DefaultRosterStore store = new DefaultRosterStore(baseDir);
         if (store.setRosterVersion("")) {
             return store;
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     /**
      * Opens a roster store
+     * 
      * @param baseDir
      *            The directory containing the roster store.
      * @return A {@link DefaultRosterStore} instance if successful,
@@ -104,8 +104,7 @@ public class DefaultRosterStore implements RosterStore {
         String s = store.readFile(store.getVersionFile());
         if (s != null && s.startsWith(STORE_ID + "\n")) {
             return store;
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -122,8 +121,7 @@ public class DefaultRosterStore implements RosterStore {
             Item entry = readEntry(file);
             if (entry == null) {
                 log("Roster store file '" + file + "' is invalid.");
-            }
-            else {
+            } else {
                 entries.add(entry);
             }
         }
@@ -161,9 +159,9 @@ public class DefaultRosterStore implements RosterStore {
     @Override
     public boolean removeEntry(String bareJid, String version) {
         try {
-            return getBareJidFile(bareJid).delete() && setRosterVersion(version);
-        }
-        catch (SecurityException e) {
+            return getBareJidFile(bareJid).delete()
+                    && setRosterVersion(version);
+        } catch (SecurityException e) {
             e.printStackTrace();
             return false;
         }
@@ -218,27 +216,23 @@ public class DefaultRosterStore implements RosterStore {
                         String group = parser.getAttributeValue(null, "name");
                         if (group != null) {
                             groupNames.add(group);
-                        }
-                        else {
+                        } else {
                             log("Invalid group entry in store entry file "
                                     + file);
                         }
                     }
-                }
-                else if (eventType == XmlPullParser.END_TAG) {
+                } else if (eventType == XmlPullParser.END_TAG) {
                     if (parser.getName().equals("item")) {
                         done = true;
                     }
                 }
             }
-        }
-        catch (IOException e) {
-            e.printStackTrace();;
+        } catch (IOException e) {
+            e.printStackTrace();
+            ;
             return null;
-        }
-        catch (XmlPullParserException e) {
-            log("Invalid group entry in store entry file "
-                    + file);
+        } catch (XmlPullParserException e) {
+            log("Invalid group entry in store entry file " + file);
             e.printStackTrace();
             return null;
         }
@@ -246,15 +240,14 @@ public class DefaultRosterStore implements RosterStore {
         if (user == null) {
             return null;
         }
-        
+
         Subscription subscription = null;
         Ask ask = null;
 
         if (type != null) {
             try {
                 subscription = Subscription.valueOf(type);
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 log("Invalid type in store entry file " + file);
                 return null;
             }
@@ -272,8 +265,7 @@ public class DefaultRosterStore implements RosterStore {
         return roster.getItems().iterator().next();
     }
 
-
-    private boolean addEntryRaw (Item item) {
+    private boolean addEntryRaw(Item item) {
         StringBuilder s = new StringBuilder();
         s.append("<item ");
         s.append(StringUtils.xmlAttrib("user", item.getJID().toBareJID()));
@@ -283,7 +275,8 @@ public class DefaultRosterStore implements RosterStore {
             s.append(" ");
         }
         if (item.getSubscription() != null) {
-            s.append(StringUtils.xmlAttrib("type", item.getSubscription().name()));
+            s.append(StringUtils.xmlAttrib("type", item.getSubscription()
+                    .name()));
             s.append(" ");
         }
         if (item.getAsk() != null) {
@@ -297,9 +290,9 @@ public class DefaultRosterStore implements RosterStore {
             s.append(" />");
         }
         s.append("</item>");
-        return writeFile(getBareJidFile(item.getJID().toBareJID()), s.toString());
+        return writeFile(getBareJidFile(item.getJID().toBareJID()),
+                s.toString());
     }
-
 
     private File getBareJidFile(String bareJid) {
         String encodedJid = Base32Encoder.getInstance().encode(bareJid);
@@ -318,17 +311,14 @@ public class DefaultRosterStore implements RosterStore {
                     s.append(buf, 0, len);
                 }
                 return s.toString();
-            }
-            finally {
+            } finally {
                 if (reader != null) {
                     reader.close();
                 }
             }
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             return null;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -340,8 +330,7 @@ public class DefaultRosterStore implements RosterStore {
             writer.write(content);
             writer.close();
             return true;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }

@@ -16,77 +16,77 @@
 package org.jamppa.component.utils;
 
 /**
- * Represents a container for attributes related 
- * to the RSM format (http://xmpp.org/extensions/xep-0059.html).
+ * Represents a container for attributes related to the RSM format
+ * (http://xmpp.org/extensions/xep-0059.html).
  * 
  */
 public class RSM {
 
-	public static String NAMESPACE = "http://jabber.org/protocol/rsm";
+    public static String NAMESPACE = "http://jabber.org/protocol/rsm";
 
-	private Integer max;
-	private Integer index = 0;
-	private String before;
-	private String after;
-	
-	private String first;
-	private String last;
-	private Integer count;
-	
-	public String getFirst() {
-		return first;
-	}
+    private Integer max;
+    private Integer index = 0;
+    private String before;
+    private String after;
 
-	public void setFirst(String first) {
-		this.first = first;
-	}
+    private String first;
+    private String last;
+    private Integer count;
 
-	public String getLast() {
-		return last;
-	}
+    public String getFirst() {
+        return first;
+    }
 
-	public void setLast(String last) {
-		this.last = last;
-	}
+    public void setFirst(String first) {
+        this.first = first;
+    }
 
-	public Integer getCount() {
-		return count;
-	}
+    public String getLast() {
+        return last;
+    }
 
-	public void setCount(Integer count) {
-		this.count = count;
-	}
+    public void setLast(String last) {
+        this.last = last;
+    }
 
-	public void setMax(Integer max) {
-		this.max = max;
-	}
+    public Integer getCount() {
+        return count;
+    }
 
-	public void setIndex(Integer index) {
-		this.index = index;
-	}
+    public void setCount(Integer count) {
+        this.count = count;
+    }
 
-	public void setBefore(String before) {
-		this.before = before;
-	}
+    public void setMax(Integer max) {
+        this.max = max;
+    }
 
-	public void setAfter(String after) {
-		this.after = after;
-	}
+    public void setIndex(Integer index) {
+        this.index = index;
+    }
 
-	public Integer getMax() {
-		return max;
-	}
+    public void setBefore(String before) {
+        this.before = before;
+    }
 
-	public Integer getIndex() {
-		return index;
-	}
+    public void setAfter(String after) {
+        this.after = after;
+    }
 
-	public String getBefore() {
-		return before;
-	}
+    public Integer getMax() {
+        return max;
+    }
 
-	public String getAfter() {
-		return after;
-	}
-	
+    public Integer getIndex() {
+        return index;
+    }
+
+    public String getBefore() {
+        return before;
+    }
+
+    public String getAfter() {
+        return after;
+    }
+
 }

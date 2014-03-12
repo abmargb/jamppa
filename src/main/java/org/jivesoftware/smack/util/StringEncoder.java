@@ -25,7 +25,7 @@ public interface StringEncoder {
      * @return
      */
     String encode(String string);
-    
+
     /**
      * Decodes an string back to it's initial representation
      * 

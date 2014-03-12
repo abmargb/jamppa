@@ -22,8 +22,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * This class provides XMPP "zlib" compression with the help of JZLib. Note that jzlib-1.0.7 must be used (i.e. in the
- * classpath), newer versions won't work!
+ * This class provides XMPP "zlib" compression with the help of JZLib. Note that
+ * jzlib-1.0.7 must be used (i.e. in the classpath), newer versions won't work!
  * 
  * @author Florian Schmaus
  * @see <a href="http://www.jcraft.com/jzlib/">JZLib</a>
@@ -52,8 +52,10 @@ public class JzlibInputOutputStream extends XMPPInputOutputStream {
     }
 
     @Override
-    public InputStream getInputStream(InputStream inputStream) throws SecurityException, NoSuchMethodException,
-            IllegalArgumentException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public InputStream getInputStream(InputStream inputStream)
+            throws SecurityException, NoSuchMethodException,
+            IllegalArgumentException, IllegalAccessException,
+            InvocationTargetException, InstantiationException {
         Constructor<?> constructor = ziClass.getConstructor(InputStream.class);
         Object in = constructor.newInstance(inputStream);
 
@@ -63,9 +65,12 @@ public class JzlibInputOutputStream extends XMPPInputOutputStream {
     }
 
     @Override
-    public OutputStream getOutputStream(OutputStream outputStream) throws SecurityException, NoSuchMethodException,
-            IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        Constructor<?> constructor = zoClass.getConstructor(OutputStream.class, Integer.TYPE);
+    public OutputStream getOutputStream(OutputStream outputStream)
+            throws SecurityException, NoSuchMethodException,
+            IllegalArgumentException, InstantiationException,
+            IllegalAccessException, InvocationTargetException {
+        Constructor<?> constructor = zoClass.getConstructor(OutputStream.class,
+                Integer.TYPE);
         Object out = constructor.newInstance(outputStream, 9);
 
         Method method = zoClass.getMethod("setFlushMode", Integer.TYPE);

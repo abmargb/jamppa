@@ -18,12 +18,13 @@
 package org.jivesoftware.smack.packet;
 
 /**
- * Interface to represent packet extensions. A packet extension is an XML subdocument
- * with a root element name and namespace. Packet extensions are used to provide
- * extended functionality beyond what is in the base XMPP specification. Examples of
- * packet extensions include message events, message properties, and extra presence data.
- * IQ packets cannot contain packet extensions.
- *
+ * Interface to represent packet extensions. A packet extension is an XML
+ * subdocument with a root element name and namespace. Packet extensions are
+ * used to provide extended functionality beyond what is in the base XMPP
+ * specification. Examples of packet extensions include message events, message
+ * properties, and extra presence data. IQ packets cannot contain packet
+ * extensions.
+ * 
  * @see DefaultPacketExtension
  * @see org.jivesoftware.smack.provider.PacketExtensionProvider
  * @author Matt Tucker
@@ -32,21 +33,21 @@ public interface PacketExtension {
 
     /**
      * Returns the root element name.
-     *
+     * 
      * @return the element name.
      */
     public String getElementName();
 
     /**
      * Returns the root element XML namespace.
-     *
+     * 
      * @return the namespace.
      */
     public String getNamespace();
 
     /**
      * Returns the XML representation of the PacketExtension.
-     *
+     * 
      * @return the packet extension as XML.
      */
     public String toXML();

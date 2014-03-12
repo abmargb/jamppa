@@ -38,184 +38,193 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class PacketParserUtils {
 
-	public static String parseContentDepth(XmlPullParser parser, int depth)
-			throws XmlPullParserException, IOException {
-		StringBuffer content = new StringBuffer();
-		while (!(parser.next() == XmlPullParser.END_TAG && parser.getDepth() == depth)) {
-			content.append(parser.getText());
-		}
-		return content.toString();
-	}
+    public static String parseContentDepth(XmlPullParser parser, int depth)
+            throws XmlPullParserException, IOException {
+        StringBuffer content = new StringBuffer();
+        while (!(parser.next() == XmlPullParser.END_TAG && parser.getDepth() == depth)) {
+            content.append(parser.getText());
+        }
+        return content.toString();
+    }
 
-	/**
-	 * Parses stream error packets.
-	 * 
-	 * @param doc
-	 *            the XML parser.
-	 * @return an stream error packet.
-	 * @throws Exception
-	 *             if an exception occurs while parsing the packet.
-	 */
-	public static StreamError parseStreamError(Element el) throws IOException,
-			XmlPullParserException {
-		String code = null;
-		Element condEl = (Element) el.elements().iterator().next();
-		if (condEl.getNamespace().getURI().equals(StreamError.NAMESPACE)) {
-			code = condEl.getName();
-		}
-		String text = condEl.elementText("text");
-		return new StreamError(code, text);
-	}
-	
-	/**
+    /**
+     * Parses stream error packets.
+     * 
+     * @param doc
+     *            the XML parser.
+     * @return an stream error packet.
+     * @throws Exception
+     *             if an exception occurs while parsing the packet.
+     */
+    public static StreamError parseStreamError(Element el) throws IOException,
+            XmlPullParserException {
+        String code = null;
+        Element condEl = (Element) el.elements().iterator().next();
+        if (condEl.getNamespace().getURI().equals(StreamError.NAMESPACE)) {
+            code = condEl.getName();
+        }
+        String text = condEl.elementText("text");
+        return new StreamError(code, text);
+    }
+
+    /**
      * Parse the available SASL mechanisms reported from the server.
-     *
-     * @param mechanismsEl the XML parser, positioned at the start of the mechanisms stanza.
-     * @return a collection of Stings with the mechanisms included in the mechanisms stanza.
-     * @throws Exception if an exception occurs while parsing the stanza.
+     * 
+     * @param mechanismsEl
+     *            the XML parser, positioned at the start of the mechanisms
+     *            stanza.
+     * @return a collection of Stings with the mechanisms included in the
+     *         mechanisms stanza.
+     * @throws Exception
+     *             if an exception occurs while parsing the stanza.
      */
     @SuppressWarnings("unchecked")
-	public static Collection<String> parseMechanisms(Element mechanismsEl) throws Exception {
+    public static Collection<String> parseMechanisms(Element mechanismsEl)
+            throws Exception {
         List<Element> mechanisms = mechanismsEl.elements("mechanism");
         List<String> mechanismsStr = new LinkedList<String>();
         for (Element mechanismEl : mechanisms) {
-			mechanismsStr.add(mechanismEl.getText());
-		}
+            mechanismsStr.add(mechanismEl.getText());
+        }
         return mechanismsStr;
     }
 
     /**
      * Parse the available compression methods reported from the server.
-     *
-     * @param compressionEl the XML parser, positioned at the start of the compression stanza.
-     * @return a collection of Stings with the methods included in the compression stanza.
-     * @throws Exception if an exception occurs while parsing the stanza.
+     * 
+     * @param compressionEl
+     *            the XML parser, positioned at the start of the compression
+     *            stanza.
+     * @return a collection of Stings with the methods included in the
+     *         compression stanza.
+     * @throws Exception
+     *             if an exception occurs while parsing the stanza.
      */
     @SuppressWarnings("unchecked")
-	public static Collection<String> parseCompressionMethods(Element compressionEl)
-            throws IOException, XmlPullParserException {
+    public static Collection<String> parseCompressionMethods(
+            Element compressionEl) throws IOException, XmlPullParserException {
         List<Element> methodsEls = compressionEl.elements("method");
         List<String> methodsStr = new LinkedList<String>();
         for (Element methodEl : methodsEls) {
-        	methodsStr.add(methodEl.getText());
-		}
+            methodsStr.add(methodEl.getText());
+        }
         return methodsStr;
     }
 
-	/**
-	 * Parses a packet extension sub-packet.
-	 * 
-	 * @param elementName
-	 *            the XML element name of the packet extension.
-	 * @param namespace
-	 *            the XML namespace of the packet extension.
-	 * @param parser
-	 *            the XML parser, positioned at the starting element of the
-	 *            extension.
-	 * @return a PacketExtension.
-	 * @throws Exception
-	 *             if a parsing error occurs.
-	 */
-	public static PacketExtension parsePacketExtension(String elementName,
-			String namespace, XmlPullParser parser) throws Exception {
-		DefaultPacketExtension extension = new DefaultPacketExtension(
-				elementName, namespace);
-		boolean done = false;
-		while (!done) {
-			int eventType = parser.next();
-			if (eventType == XmlPullParser.START_TAG) {
-				String name = parser.getName();
-				// If an empty element, set the value with the empty string.
-				if (parser.isEmptyElementTag()) {
-					extension.setValue(name, "");
-				}
-				// Otherwise, get the the element text.
-				else {
-					eventType = parser.next();
-					if (eventType == XmlPullParser.TEXT) {
-						String value = parser.getText();
-						extension.setValue(name, value);
-					}
-				}
-			} else if (eventType == XmlPullParser.END_TAG) {
-				if (parser.getName().equals(elementName)) {
-					done = true;
-				}
-			}
-		}
-		return extension;
-	}
+    /**
+     * Parses a packet extension sub-packet.
+     * 
+     * @param elementName
+     *            the XML element name of the packet extension.
+     * @param namespace
+     *            the XML namespace of the packet extension.
+     * @param parser
+     *            the XML parser, positioned at the starting element of the
+     *            extension.
+     * @return a PacketExtension.
+     * @throws Exception
+     *             if a parsing error occurs.
+     */
+    public static PacketExtension parsePacketExtension(String elementName,
+            String namespace, XmlPullParser parser) throws Exception {
+        DefaultPacketExtension extension = new DefaultPacketExtension(
+                elementName, namespace);
+        boolean done = false;
+        while (!done) {
+            int eventType = parser.next();
+            if (eventType == XmlPullParser.START_TAG) {
+                String name = parser.getName();
+                // If an empty element, set the value with the empty string.
+                if (parser.isEmptyElementTag()) {
+                    extension.setValue(name, "");
+                }
+                // Otherwise, get the the element text.
+                else {
+                    eventType = parser.next();
+                    if (eventType == XmlPullParser.TEXT) {
+                        String value = parser.getText();
+                        extension.setValue(name, value);
+                    }
+                }
+            } else if (eventType == XmlPullParser.END_TAG) {
+                if (parser.getName().equals(elementName)) {
+                    done = true;
+                }
+            }
+        }
+        return extension;
+    }
 
-	public static Object parseWithIntrospection(String elementName,
-			Class<?> objectClass, XmlPullParser parser) throws Exception {
-		boolean done = false;
-		Object object = objectClass.newInstance();
-		while (!done) {
-			int eventType = parser.next();
-			if (eventType == XmlPullParser.START_TAG) {
-				String name = parser.getName();
-				String stringValue = parser.nextText();
-				PropertyDescriptor descriptor = new PropertyDescriptor(name,
-						objectClass);
-				// Load the class type of the property.
-				Class<?> propertyType = descriptor.getPropertyType();
-				// Get the value of the property by converting it from a
-				// String to the correct object type.
-				Object value = decode(propertyType, stringValue);
-				// Set the value of the bean.
-				descriptor.getWriteMethod().invoke(object, value);
-			} else if (eventType == XmlPullParser.END_TAG) {
-				if (parser.getName().equals(elementName)) {
-					done = true;
-				}
-			}
-		}
-		return object;
-	}
+    public static Object parseWithIntrospection(String elementName,
+            Class<?> objectClass, XmlPullParser parser) throws Exception {
+        boolean done = false;
+        Object object = objectClass.newInstance();
+        while (!done) {
+            int eventType = parser.next();
+            if (eventType == XmlPullParser.START_TAG) {
+                String name = parser.getName();
+                String stringValue = parser.nextText();
+                PropertyDescriptor descriptor = new PropertyDescriptor(name,
+                        objectClass);
+                // Load the class type of the property.
+                Class<?> propertyType = descriptor.getPropertyType();
+                // Get the value of the property by converting it from a
+                // String to the correct object type.
+                Object value = decode(propertyType, stringValue);
+                // Set the value of the bean.
+                descriptor.getWriteMethod().invoke(object, value);
+            } else if (eventType == XmlPullParser.END_TAG) {
+                if (parser.getName().equals(elementName)) {
+                    done = true;
+                }
+            }
+        }
+        return object;
+    }
 
-	/**
-	 * Decodes a String into an object of the specified type. If the object type
-	 * is not supported, null will be returned.
-	 * 
-	 * @param type
-	 *            the type of the property.
-	 * @param value
-	 *            the encode String value to decode.
-	 * @return the String value decoded into the specified type.
-	 * @throws Exception
-	 *             If decoding failed due to an error.
-	 */
-	private static Object decode(Class<?> type, String value) throws Exception {
-		if (type.getName().equals("java.lang.String")) {
-			return value;
-		}
-		if (type.getName().equals("boolean")) {
-			return Boolean.valueOf(value);
-		}
-		if (type.getName().equals("int")) {
-			return Integer.valueOf(value);
-		}
-		if (type.getName().equals("long")) {
-			return Long.valueOf(value);
-		}
-		if (type.getName().equals("float")) {
-			return Float.valueOf(value);
-		}
-		if (type.getName().equals("double")) {
-			return Double.valueOf(value);
-		}
-		if (type.getName().equals("java.lang.Class")) {
-			return Class.forName(value);
-		}
-		return null;
-	}
-	
-	public static void updateText(Element parentEl, String elName, String text) {
-		Element el = parentEl.element(elName);
+    /**
+     * Decodes a String into an object of the specified type. If the object type
+     * is not supported, null will be returned.
+     * 
+     * @param type
+     *            the type of the property.
+     * @param value
+     *            the encode String value to decode.
+     * @return the String value decoded into the specified type.
+     * @throws Exception
+     *             If decoding failed due to an error.
+     */
+    private static Object decode(Class<?> type, String value) throws Exception {
+        if (type.getName().equals("java.lang.String")) {
+            return value;
+        }
+        if (type.getName().equals("boolean")) {
+            return Boolean.valueOf(value);
+        }
+        if (type.getName().equals("int")) {
+            return Integer.valueOf(value);
+        }
+        if (type.getName().equals("long")) {
+            return Long.valueOf(value);
+        }
+        if (type.getName().equals("float")) {
+            return Float.valueOf(value);
+        }
+        if (type.getName().equals("double")) {
+            return Double.valueOf(value);
+        }
+        if (type.getName().equals("java.lang.Class")) {
+            return Class.forName(value);
+        }
+        return null;
+    }
+
+    public static void updateText(Element parentEl, String elName, String text) {
+        Element el = parentEl.element(elName);
         if (el == null) {
-        	el = parentEl.addElement(elName);
+            el = parentEl.addElement(elName);
         }
         el.setText(text);
-	}
+    }
 
 }

@@ -16,10 +16,10 @@
  */
 package org.jivesoftware.smack.util.collections;
 
-
 /**
- * Abstract pair class to assist with creating KeyValue and MapEntry implementations.
- *
+ * Abstract pair class to assist with creating KeyValue and MapEntry
+ * implementations.
+ * 
  * @author James Strachan
  * @author Michael A. Smith
  * @author Neil O'Toole
@@ -27,7 +27,7 @@ package org.jivesoftware.smack.util.collections;
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:32 $
  * @since Commons Collections 3.0
  */
-public abstract class AbstractKeyValue <K,V> implements KeyValue<K, V> {
+public abstract class AbstractKeyValue<K, V> implements KeyValue<K, V> {
 
     /**
      * The key
@@ -40,9 +40,11 @@ public abstract class AbstractKeyValue <K,V> implements KeyValue<K, V> {
 
     /**
      * Constructs a new pair with the specified key and given value.
-     *
-     * @param key   the key for the entry, may be null
-     * @param value the value for the entry, may be null
+     * 
+     * @param key
+     *            the key for the entry, may be null
+     * @param value
+     *            the value for the entry, may be null
      */
     protected AbstractKeyValue(K key, V value) {
         super();
@@ -52,7 +54,7 @@ public abstract class AbstractKeyValue <K,V> implements KeyValue<K, V> {
 
     /**
      * Gets the key from the pair.
-     *
+     * 
      * @return the key
      */
     public K getKey() {
@@ -61,7 +63,7 @@ public abstract class AbstractKeyValue <K,V> implements KeyValue<K, V> {
 
     /**
      * Gets the value from the pair.
-     *
+     * 
      * @return the value
      */
     public V getValue() {
@@ -70,11 +72,12 @@ public abstract class AbstractKeyValue <K,V> implements KeyValue<K, V> {
 
     /**
      * Gets a debugging String view of the pair.
-     *
+     * 
      * @return a String view of the entry
      */
     public String toString() {
-        return new StringBuilder().append(getKey()).append('=').append(getValue()).toString();
+        return new StringBuilder().append(getKey()).append('=')
+                .append(getValue()).toString();
     }
 
 }

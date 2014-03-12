@@ -6,10 +6,10 @@ import org.xmpp.packet.Packet;
 
 public interface Plugin {
 
-	public void create(XMPPClient xmppClient);
-	
-	public void checkSupport(Element featuresEl);
-	
-	public Packet parse(Element el);
-	
+    public void create(XMPPClient xmppClient);
+
+    public void checkSupport(Element featuresEl);
+
+    public Packet parse(Element el);
+
 }

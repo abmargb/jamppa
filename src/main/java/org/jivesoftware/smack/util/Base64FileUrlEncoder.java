@@ -14,14 +14,15 @@
 
 package org.jivesoftware.smack.util;
 
-
 /**
- * A Base 64 encoding implementation that generates filename and Url safe encodings.
+ * A Base 64 encoding implementation that generates filename and Url safe
+ * encodings.
  * 
  * <p>
- * Note: This does NOT produce standard Base 64 encodings, but a variant as defined in 
- * Section 4 of RFC3548:
- * <a href="http://www.faqs.org/rfcs/rfc3548.html">http://www.faqs.org/rfcs/rfc3548.html</a>.
+ * Note: This does NOT produce standard Base 64 encodings, but a variant as
+ * defined in Section 4 of RFC3548: <a
+ * href="http://www.faqs.org/rfcs/rfc3548.html"
+ * >http://www.faqs.org/rfcs/rfc3548.html</a>.
  * 
  * @author Robin Collier
  */

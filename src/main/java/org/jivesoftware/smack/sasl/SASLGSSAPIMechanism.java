@@ -27,7 +27,7 @@ import javax.security.auth.callback.CallbackHandler;
 
 /**
  * Implementation of the SASL GSSAPI mechanism
- *
+ * 
  * @author Jay Kline
  */
 public class SASLGSSAPIMechanism extends SASLMechanism {
@@ -35,8 +35,8 @@ public class SASLGSSAPIMechanism extends SASLMechanism {
     public SASLGSSAPIMechanism(SASLAuthentication saslAuthentication) {
         super(saslAuthentication);
 
-        System.setProperty("javax.security.auth.useSubjectCredsOnly","false");
-        System.setProperty("java.security.auth.login.config","gss.conf");
+        System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
+        System.setProperty("java.security.auth.login.config", "gss.conf");
 
     }
 
@@ -45,42 +45,53 @@ public class SASLGSSAPIMechanism extends SASLMechanism {
     }
 
     /**
-     * Builds and sends the <tt>auth</tt> stanza to the server.
-     * This overrides from the abstract class because the initial token
-     * needed for GSSAPI is binary, and not safe to put in a string, thus
-     * getAuthenticationText() cannot be used.
-     *
-     * @param username the username of the user being authenticated.
-     * @param host     the hostname where the user account resides.
-     * @param cbh      the CallbackHandler (not used with GSSAPI)
-     * @throws IOException If a network error occures while authenticating.
+     * Builds and sends the <tt>auth</tt> stanza to the server. This overrides
+     * from the abstract class because the initial token needed for GSSAPI is
+     * binary, and not safe to put in a string, thus getAuthenticationText()
+     * cannot be used.
+     * 
+     * @param username
+     *            the username of the user being authenticated.
+     * @param host
+     *            the hostname where the user account resides.
+     * @param cbh
+     *            the CallbackHandler (not used with GSSAPI)
+     * @throws IOException
+     *             If a network error occures while authenticating.
      */
-    public void authenticate(String username, String host, CallbackHandler cbh) throws IOException, XMPPException {
+    public void authenticate(String username, String host, CallbackHandler cbh)
+            throws IOException, XMPPException {
         String[] mechanisms = { getName() };
-        Map<String,String> props = new HashMap<String,String>();
-        props.put(Sasl.SERVER_AUTH,"TRUE");
-        sc = Sasl.createSaslClient(mechanisms, username, "xmpp", host, props, cbh);
+        Map<String, String> props = new HashMap<String, String>();
+        props.put(Sasl.SERVER_AUTH, "TRUE");
+        sc = Sasl.createSaslClient(mechanisms, username, "xmpp", host, props,
+                cbh);
         authenticate();
     }
 
     /**
-     * Builds and sends the <tt>auth</tt> stanza to the server.
-     * This overrides from the abstract class because the initial token
-     * needed for GSSAPI is binary, and not safe to put in a string, thus
-     * getAuthenticationText() cannot be used.
-     *
-     * @param username the username of the user being authenticated.
-     * @param host     the hostname where the user account resides.
-     * @param password the password of the user (ignored for GSSAPI)
-     * @throws IOException If a network error occures while authenticating.
+     * Builds and sends the <tt>auth</tt> stanza to the server. This overrides
+     * from the abstract class because the initial token needed for GSSAPI is
+     * binary, and not safe to put in a string, thus getAuthenticationText()
+     * cannot be used.
+     * 
+     * @param username
+     *            the username of the user being authenticated.
+     * @param host
+     *            the hostname where the user account resides.
+     * @param password
+     *            the password of the user (ignored for GSSAPI)
+     * @throws IOException
+     *             If a network error occures while authenticating.
      */
-    public void authenticate(String username, String host, String password) throws IOException, XMPPException {
+    public void authenticate(String username, String host, String password)
+            throws IOException, XMPPException {
         String[] mechanisms = { getName() };
-        Map<String,String> props = new HashMap<String, String>();
-        props.put(Sasl.SERVER_AUTH,"TRUE");
-        sc = Sasl.createSaslClient(mechanisms, username, "xmpp", host, props, this);
+        Map<String, String> props = new HashMap<String, String>();
+        props.put(Sasl.SERVER_AUTH, "TRUE");
+        sc = Sasl.createSaslClient(mechanisms, username, "xmpp", host, props,
+                this);
         authenticate();
     }
-
 
 }

@@ -30,20 +30,23 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Configuration to use while establishing the connection to the server. It is possible to
- * configure the path to the trustore file that keeps the trusted CA root certificates and
- * enable or disable all or some of the checkings done while verifying server certificates.<p>
- *
- * It is also possible to configure if TLS, SASL, and compression are used or not.
- *
+ * Configuration to use while establishing the connection to the server. It is
+ * possible to configure the path to the trustore file that keeps the trusted CA
+ * root certificates and enable or disable all or some of the checkings done
+ * while verifying server certificates.
+ * <p>
+ * 
+ * It is also possible to configure if TLS, SASL, and compression are used or
+ * not.
+ * 
  * @author Gaston Dombiak
  */
 public class ConnectionConfiguration implements Cloneable {
 
     /**
-     * Hostname of the XMPP server. Usually servers use the same service name as the name
-     * of the server. However, there are some servers like google where host would be
-     * talk.google.com and the serviceName would be gmail.com.
+     * Hostname of the XMPP server. Usually servers use the same service name as
+     * the name of the server. However, there are some servers like google where
+     * host would be talk.google.com and the serviceName would be gmail.com.
      */
     private String serviceName;
 
@@ -66,12 +69,14 @@ public class ConnectionConfiguration implements Cloneable {
 
     private boolean debuggerEnabled = Connection.DEBUG_ENABLED;
 
-    // Flag that indicates if a reconnection should be attempted when abruptly disconnected
+    // Flag that indicates if a reconnection should be attempted when abruptly
+    // disconnected
     private boolean reconnectionAllowed = true;
-    
-    // Holds the socket factory that is used to generate the socket in the connection
+
+    // Holds the socket factory that is used to generate the socket in the
+    // connection
     private SocketFactory socketFactory;
-    
+
     // Holds the authentication information for future reconnections
     private String username;
     private String password;
@@ -85,22 +90,24 @@ public class ConnectionConfiguration implements Cloneable {
      */
     private RosterStore rosterStore;
 
-    // Holds the proxy information (such as proxyhost, proxyport, username, password etc)
+    // Holds the proxy information (such as proxyhost, proxyport, username,
+    // password etc)
     protected ProxyInfo proxy;
 
     /**
      * Constructor used for subclassing ConnectionConfiguration
      */
     ConnectionConfiguration() {
-      /* Does nothing */
+        /* Does nothing */
     }
 
     /**
-     * Creates a new ConnectionConfiguration for the specified service name.
-     * A DNS SRV lookup will be performed to find out the actual host address
-     * and port to use for the connection.
-     *
-     * @param serviceName the name of the service provided by an XMPP server.
+     * Creates a new ConnectionConfiguration for the specified service name. A
+     * DNS SRV lookup will be performed to find out the actual host address and
+     * port to use for the connection.
+     * 
+     * @param serviceName
+     *            the name of the service provided by an XMPP server.
      */
     public ConnectionConfiguration(String serviceName) {
         // Perform DNS lookup to get host and port to use
@@ -108,16 +115,17 @@ public class ConnectionConfiguration implements Cloneable {
         init(serviceName, ProxyInfo.forDefaultProxy());
     }
 
-     /**
-     * Creates a new ConnectionConfiguration for the specified service name 
-     * with specified proxy.
-     * A DNS SRV lookup will be performed to find out the actual host address
-     * and port to use for the connection.
-     *
-     * @param serviceName the name of the service provided by an XMPP server.
-     * @param proxy the proxy through which XMPP is to be connected
+    /**
+     * Creates a new ConnectionConfiguration for the specified service name with
+     * specified proxy. A DNS SRV lookup will be performed to find out the
+     * actual host address and port to use for the connection.
+     * 
+     * @param serviceName
+     *            the name of the service provided by an XMPP server.
+     * @param proxy
+     *            the proxy through which XMPP is to be connected
      */
-    public ConnectionConfiguration(String serviceName,ProxyInfo proxy) {
+    public ConnectionConfiguration(String serviceName, ProxyInfo proxy) {
         // Perform DNS lookup to get host and port to use
         hostAddresses = DNSUtil.resolveXMPPDomain(serviceName);
         init(serviceName, proxy);
@@ -129,35 +137,43 @@ public class ConnectionConfiguration implements Cloneable {
      * process that's used with the {@link #ConnectionConfiguration(String)}
      * constructor. For example, say that an XMPP server is running at localhost
      * in an internal network on port 5222 but is configured to think that it's
-     * "example.com" for testing purposes. This constructor is necessary to connect
-     * to the server in that case since a DNS SRV lookup for example.com would not
-     * point to the local testing server.
-     *
-     * @param host the host where the XMPP server is running.
-     * @param port the port where the XMPP is listening.
-     * @param serviceName the name of the service provided by an XMPP server.
+     * "example.com" for testing purposes. This constructor is necessary to
+     * connect to the server in that case since a DNS SRV lookup for example.com
+     * would not point to the local testing server.
+     * 
+     * @param host
+     *            the host where the XMPP server is running.
+     * @param port
+     *            the port where the XMPP is listening.
+     * @param serviceName
+     *            the name of the service provided by an XMPP server.
      */
     public ConnectionConfiguration(String host, int port, String serviceName) {
         initHostAddresses(host, port);
         init(serviceName, ProxyInfo.forDefaultProxy());
     }
-	
-	/**
+
+    /**
      * Creates a new ConnectionConfiguration using the specified host, port and
      * service name. This is useful for manually overriding the DNS SRV lookup
      * process that's used with the {@link #ConnectionConfiguration(String)}
      * constructor. For example, say that an XMPP server is running at localhost
      * in an internal network on port 5222 but is configured to think that it's
-     * "example.com" for testing purposes. This constructor is necessary to connect
-     * to the server in that case since a DNS SRV lookup for example.com would not
-     * point to the local testing server.
-     *
-     * @param host the host where the XMPP server is running.
-     * @param port the port where the XMPP is listening.
-     * @param serviceName the name of the service provided by an XMPP server.
-     * @param proxy the proxy through which XMPP is to be connected
+     * "example.com" for testing purposes. This constructor is necessary to
+     * connect to the server in that case since a DNS SRV lookup for example.com
+     * would not point to the local testing server.
+     * 
+     * @param host
+     *            the host where the XMPP server is running.
+     * @param port
+     *            the port where the XMPP is listening.
+     * @param serviceName
+     *            the name of the service provided by an XMPP server.
+     * @param proxy
+     *            the proxy through which XMPP is to be connected
      */
-    public ConnectionConfiguration(String host, int port, String serviceName, ProxyInfo proxy) {
+    public ConnectionConfiguration(String host, int port, String serviceName,
+            ProxyInfo proxy) {
         initHostAddresses(host, port);
         init(serviceName, proxy);
     }
@@ -165,22 +181,27 @@ public class ConnectionConfiguration implements Cloneable {
     /**
      * Creates a new ConnectionConfiguration for a connection that will connect
      * to the desired host and port.
-     *
-     * @param host the host where the XMPP server is running.
-     * @param port the port where the XMPP is listening.
+     * 
+     * @param host
+     *            the host where the XMPP server is running.
+     * @param port
+     *            the port where the XMPP is listening.
      */
     public ConnectionConfiguration(String host, int port) {
         initHostAddresses(host, port);
         init(host, ProxyInfo.forDefaultProxy());
     }
-	
-	/**
+
+    /**
      * Creates a new ConnectionConfiguration for a connection that will connect
      * to the desired host and port with desired proxy.
-     *
-     * @param host the host where the XMPP server is running.
-     * @param port the port where the XMPP is listening.
-     * @param proxy the proxy through which XMPP is to be connected
+     * 
+     * @param host
+     *            the host where the XMPP server is running.
+     * @param port
+     *            the port where the XMPP is listening.
+     * @param proxy
+     *            the proxy through which XMPP is to be connected
      */
     public ConnectionConfiguration(String host, int port, ProxyInfo proxy) {
         initHostAddresses(host, port);
@@ -194,15 +215,16 @@ public class ConnectionConfiguration implements Cloneable {
         keystorePath = System.getProperty("javax.net.ssl.keyStore");
         keystoreType = "jks";
         pkcs11Library = "pkcs11.config";
-		
-		//Setting the SocketFactory according to proxy supplied
+
+        // Setting the SocketFactory according to proxy supplied
         socketFactory = proxy.getSocketFactory();
     }
 
     /**
      * Sets the server name, also known as XMPP domain of the target server.
-     *
-     * @param serviceName the XMPP domain of the target server.
+     * 
+     * @param serviceName
+     *            the XMPP domain of the target server.
      */
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
@@ -210,7 +232,7 @@ public class ConnectionConfiguration implements Cloneable {
 
     /**
      * Returns the server name of the target server.
-     *
+     * 
      * @return the server name of the target server.
      */
     public String getServiceName() {
@@ -218,10 +240,11 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
-     * Returns the host to use when establishing the connection. The host and port to use
-     * might have been resolved by a DNS lookup as specified by the XMPP spec (and therefore
-     * may not match the {@link #getServiceName service name}.
-     *
+     * Returns the host to use when establishing the connection. The host and
+     * port to use might have been resolved by a DNS lookup as specified by the
+     * XMPP spec (and therefore may not match the {@link #getServiceName service
+     * name}.
+     * 
      * @return the host to use when establishing the connection.
      */
     public String getHost() {
@@ -229,9 +252,10 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
-     * Returns the port to use when establishing the connection. The host and port to use
-     * might have been resolved by a DNS lookup as specified by the XMPP spec.
-     *
+     * Returns the port to use when establishing the connection. The host and
+     * port to use might have been resolved by a DNS lookup as specified by the
+     * XMPP spec.
+     * 
      * @return the port to use when establishing the connection.
      */
     public int getPort() {
@@ -244,9 +268,9 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
-     * Returns the TLS security mode used when making the connection. By default,
-     * the mode is {@link SecurityMode#enabled}.
-     *
+     * Returns the TLS security mode used when making the connection. By
+     * default, the mode is {@link SecurityMode#enabled}.
+     * 
      * @return the security mode.
      */
     public SecurityMode getSecurityMode() {
@@ -256,18 +280,19 @@ public class ConnectionConfiguration implements Cloneable {
     /**
      * Sets the TLS security mode used when making the connection. By default,
      * the mode is {@link SecurityMode#enabled}.
-     *
-     * @param securityMode the security mode.
+     * 
+     * @param securityMode
+     *            the security mode.
      */
     public void setSecurityMode(SecurityMode securityMode) {
         this.securityMode = securityMode;
     }
 
     /**
-     * Retuns the path to the keystore file. The key store file contains the 
+     * Retuns the path to the keystore file. The key store file contains the
      * certificates that may be used to authenticate the client to the server,
      * in the event the server requests or requires it.
-     *
+     * 
      * @return the path to the keystore file.
      */
     public String getKeystorePath() {
@@ -275,11 +300,12 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
-     * Sets the path to the keystore file. The key store file contains the 
+     * Sets the path to the keystore file. The key store file contains the
      * certificates that may be used to authenticate the client to the server,
      * in the event the server requests or requires it.
-     *
-     * @param keystorePath the path to the keystore file.
+     * 
+     * @param keystorePath
+     *            the path to the keystore file.
      */
     public void setKeystorePath(String keystorePath) {
         this.keystorePath = keystorePath;
@@ -287,7 +313,7 @@ public class ConnectionConfiguration implements Cloneable {
 
     /**
      * Returns the keystore type, or <tt>null</tt> if it's not set.
-     *
+     * 
      * @return the keystore type.
      */
     public String getKeystoreType() {
@@ -296,18 +322,18 @@ public class ConnectionConfiguration implements Cloneable {
 
     /**
      * Sets the keystore type.
-     *
-     * @param keystoreType the keystore type.
+     * 
+     * @param keystoreType
+     *            the keystore type.
      */
     public void setKeystoreType(String keystoreType) {
         this.keystoreType = keystoreType;
     }
 
-
     /**
-     * Returns the PKCS11 library file location, needed when the
-     * Keystore type is PKCS11.
-     *
+     * Returns the PKCS11 library file location, needed when the Keystore type
+     * is PKCS11.
+     * 
      * @return the path to the PKCS11 library file
      */
     public String getPKCS11Library() {
@@ -315,10 +341,11 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
-     * Sets the PKCS11 library file location, needed when the
-     * Keystore type is PKCS11
-     *
-     * @param pkcs11Library the path to the PKCS11 library file
+     * Sets the PKCS11 library file location, needed when the Keystore type is
+     * PKCS11
+     * 
+     * @param pkcs11Library
+     *            the path to the PKCS11 library file
      */
     public void setPKCS11Library(String pkcs11Library) {
         this.pkcs11Library = pkcs11Library;
@@ -326,7 +353,7 @@ public class ConnectionConfiguration implements Cloneable {
 
     /**
      * Gets the custom SSLContext for SSL sockets. This is null by default.
-     *
+     * 
      * @return the SSLContext previously set with setCustomSSLContext() or null.
      */
     public SSLContext getCustomSSLContext() {
@@ -334,21 +361,24 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
-     * Sets a custom SSLContext for creating SSL sockets. A custom Context causes all other
-     * SSL/TLS realted settings to be ignored.
-     *
-     * @param context the custom SSLContext for new sockets; null to reset default behavior.
+     * Sets a custom SSLContext for creating SSL sockets. A custom Context
+     * causes all other SSL/TLS realted settings to be ignored.
+     * 
+     * @param context
+     *            the custom SSLContext for new sockets; null to reset default
+     *            behavior.
      */
     public void setCustomSSLContext(SSLContext context) {
         this.customSSLContext = context;
     }
 
     /**
-     * Returns true if the connection is going to use stream compression. Stream compression
-     * will be requested after TLS was established (if TLS was enabled) and only if the server
-     * offered stream compression. With stream compression network traffic can be reduced
-     * up to 90%. By default compression is disabled.
-     *
+     * Returns true if the connection is going to use stream compression. Stream
+     * compression will be requested after TLS was established (if TLS was
+     * enabled) and only if the server offered stream compression. With stream
+     * compression network traffic can be reduced up to 90%. By default
+     * compression is disabled.
+     * 
      * @return true if the connection is going to use stream compression.
      */
     public boolean isCompressionEnabled() {
@@ -356,108 +386,121 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
-     * Sets if the connection is going to use stream compression. Stream compression
-     * will be requested after TLS was established (if TLS was enabled) and only if the server
-     * offered stream compression. With stream compression network traffic can be reduced
-     * up to 90%. By default compression is disabled.
-     *
-     * @param compressionEnabled if the connection is going to use stream compression.
+     * Sets if the connection is going to use stream compression. Stream
+     * compression will be requested after TLS was established (if TLS was
+     * enabled) and only if the server offered stream compression. With stream
+     * compression network traffic can be reduced up to 90%. By default
+     * compression is disabled.
+     * 
+     * @param compressionEnabled
+     *            if the connection is going to use stream compression.
      */
     public void setCompressionEnabled(boolean compressionEnabled) {
         this.compressionEnabled = compressionEnabled;
     }
 
     /**
-     * Returns true if the client is going to use SASL authentication when logging into the
-     * server. If SASL authenticatin fails then the client will try to use non-sasl authentication.
-     * By default SASL is enabled.
-     *
-     * @return true if the client is going to use SASL authentication when logging into the
-     *         server.
+     * Returns true if the client is going to use SASL authentication when
+     * logging into the server. If SASL authenticatin fails then the client will
+     * try to use non-sasl authentication. By default SASL is enabled.
+     * 
+     * @return true if the client is going to use SASL authentication when
+     *         logging into the server.
      */
     public boolean isSASLAuthenticationEnabled() {
         return saslAuthenticationEnabled;
     }
 
     /**
-     * Sets whether the client will use SASL authentication when logging into the
-     * server. If SASL authenticatin fails then the client will try to use non-sasl authentication.
-     * By default, SASL is enabled.
-     *
-     * @param saslAuthenticationEnabled if the client is going to use SASL authentication when
-     *        logging into the server.
+     * Sets whether the client will use SASL authentication when logging into
+     * the server. If SASL authenticatin fails then the client will try to use
+     * non-sasl authentication. By default, SASL is enabled.
+     * 
+     * @param saslAuthenticationEnabled
+     *            if the client is going to use SASL authentication when logging
+     *            into the server.
      */
     public void setSASLAuthenticationEnabled(boolean saslAuthenticationEnabled) {
         this.saslAuthenticationEnabled = saslAuthenticationEnabled;
     }
 
     /**
-     * Returns true if the new connection about to be establish is going to be debugged. By
-     * default the value of {@link Connection#DEBUG_ENABLED} is used.
-     *
-     * @return true if the new connection about to be establish is going to be debugged.
+     * Returns true if the new connection about to be establish is going to be
+     * debugged. By default the value of {@link Connection#DEBUG_ENABLED} is
+     * used.
+     * 
+     * @return true if the new connection about to be establish is going to be
+     *         debugged.
      */
     public boolean isDebuggerEnabled() {
         return debuggerEnabled;
     }
 
     /**
-     * Sets if the new connection about to be establish is going to be debugged. By
-     * default the value of {@link Connection#DEBUG_ENABLED} is used.
-     *
-     * @param debuggerEnabled if the new connection about to be establish is going to be debugged.
+     * Sets if the new connection about to be establish is going to be debugged.
+     * By default the value of {@link Connection#DEBUG_ENABLED} is used.
+     * 
+     * @param debuggerEnabled
+     *            if the new connection about to be establish is going to be
+     *            debugged.
      */
     public void setDebuggerEnabled(boolean debuggerEnabled) {
         this.debuggerEnabled = debuggerEnabled;
     }
-    
+
     /**
      * Sets if the reconnection mechanism is allowed to be used. By default
      * reconnection is allowed.
      * 
-     * @param isAllowed if the reconnection mechanism is allowed to use.
+     * @param isAllowed
+     *            if the reconnection mechanism is allowed to use.
      */
     public void setReconnectionAllowed(boolean isAllowed) {
         this.reconnectionAllowed = isAllowed;
     }
+
     /**
      * Returns if the reconnection mechanism is allowed to be used. By default
      * reconnection is allowed.
-     *
+     * 
      * @return if the reconnection mechanism is allowed to be used.
      */
     public boolean isReconnectionAllowed() {
         return this.reconnectionAllowed;
     }
-    
+
     /**
-     * Sets the socket factory used to create new xmppConnection sockets.
-     * This is useful when connecting through SOCKS5 proxies.
-     *
-     * @param socketFactory used to create new sockets.
+     * Sets the socket factory used to create new xmppConnection sockets. This
+     * is useful when connecting through SOCKS5 proxies.
+     * 
+     * @param socketFactory
+     *            used to create new sockets.
      */
     public void setSocketFactory(SocketFactory socketFactory) {
         this.socketFactory = socketFactory;
     }
 
     /**
-     * Sets if an initial available presence will be sent to the server. By default
-     * an available presence will be sent to the server indicating that this presence
-     * is not online and available to receive messages. If you want to log in without
-     * being 'noticed' then pass a <tt>false</tt> value.
-     *
-     * @param sendPresence true if an initial available presence will be sent while logging in.
+     * Sets if an initial available presence will be sent to the server. By
+     * default an available presence will be sent to the server indicating that
+     * this presence is not online and available to receive messages. If you
+     * want to log in without being 'noticed' then pass a <tt>false</tt> value.
+     * 
+     * @param sendPresence
+     *            true if an initial available presence will be sent while
+     *            logging in.
      */
     public void setSendPresence(boolean sendPresence) {
         this.sendPresence = sendPresence;
     }
 
     /**
-     * Returns true if the roster will be loaded from the server when logging in. This
-     * is the common behaviour for clients but sometimes clients may want to differ this
-     * or just never do it if not interested in rosters.
-     *
-     * @return true if the roster will be loaded from the server when logging in.
+     * Returns true if the roster will be loaded from the server when logging
+     * in. This is the common behaviour for clients but sometimes clients may
+     * want to differ this or just never do it if not interested in rosters.
+     * 
+     * @return true if the roster will be loaded from the server when logging
+     *         in.
      */
     public boolean isRosterLoadedAtLogin() {
         return rosterLoadedAtLogin;
@@ -465,10 +508,11 @@ public class ConnectionConfiguration implements Cloneable {
 
     /**
      * Sets if the roster will be loaded from the server when logging in. This
-     * is the common behaviour for clients but sometimes clients may want to differ this
-     * or just never do it if not interested in rosters.
-     *
-     * @param rosterLoadedAtLogin if the roster will be loaded from the server when logging in.
+     * is the common behaviour for clients but sometimes clients may want to
+     * differ this or just never do it if not interested in rosters.
+     * 
+     * @param rosterLoadedAtLogin
+     *            if the roster will be loaded from the server when logging in.
      */
     public void setRosterLoadedAtLogin(boolean rosterLoadedAtLogin) {
         this.rosterLoadedAtLogin = rosterLoadedAtLogin;
@@ -477,11 +521,11 @@ public class ConnectionConfiguration implements Cloneable {
     /**
      * Returns a CallbackHandler to obtain information, such as the password or
      * principal information during the SASL authentication. A CallbackHandler
-     * will be used <b>ONLY</b> if no password was specified during the login while
-     * using SASL authentication.
-     *
+     * will be used <b>ONLY</b> if no password was specified during the login
+     * while using SASL authentication.
+     * 
      * @return a CallbackHandler to obtain information, such as the password or
-     * principal information during the SASL authentication.
+     *         principal information during the SASL authentication.
      */
     public CallbackHandler getCallbackHandler() {
         return callbackHandler;
@@ -490,11 +534,12 @@ public class ConnectionConfiguration implements Cloneable {
     /**
      * Sets a CallbackHandler to obtain information, such as the password or
      * principal information during the SASL authentication. A CallbackHandler
-     * will be used <b>ONLY</b> if no password was specified during the login while
-     * using SASL authentication.
-     *
-     * @param callbackHandler to obtain information, such as the password or
-     * principal information during the SASL authentication.
+     * will be used <b>ONLY</b> if no password was specified during the login
+     * while using SASL authentication.
+     * 
+     * @param callbackHandler
+     *            to obtain information, such as the password or principal
+     *            information during the SASL authentication.
      */
     public void setCallbackHandler(CallbackHandler callbackHandler) {
         this.callbackHandler = callbackHandler;
@@ -528,37 +573,36 @@ public class ConnectionConfiguration implements Cloneable {
         return rosterStore;
     }
 
-
     /**
-     * An enumeration for TLS security modes that are available when making a connection
-     * to the XMPP server.
+     * An enumeration for TLS security modes that are available when making a
+     * connection to the XMPP server.
      */
     public static enum SecurityMode {
 
         /**
-         * Securirty via TLS encryption is required in order to connect. If the server
-         * does not offer TLS or if the TLS negotiaton fails, the connection to the server
-         * will fail.
+         * Securirty via TLS encryption is required in order to connect. If the
+         * server does not offer TLS or if the TLS negotiaton fails, the
+         * connection to the server will fail.
          */
         required,
 
         /**
-         * Security via TLS encryption is used whenever it's available. This is the
-         * default setting.
+         * Security via TLS encryption is used whenever it's available. This is
+         * the default setting.
          */
         enabled,
 
         /**
-         * Security via TLS encryption is disabled and only un-encrypted connections will
-         * be used. If only TLS encryption is available from the server, the connection
-         * will fail.
+         * Security via TLS encryption is disabled and only un-encrypted
+         * connections will be used. If only TLS encryption is available from
+         * the server, the connection will fail.
          */
         disabled
     }
 
     /**
      * Returns the username to use when trying to reconnect to the server.
-     *
+     * 
      * @return the username to use when trying to reconnect to the server.
      */
     String getUsername() {
@@ -567,7 +611,7 @@ public class ConnectionConfiguration implements Cloneable {
 
     /**
      * Returns the password to use when trying to reconnect to the server.
-     *
+     * 
      * @return the password to use when trying to reconnect to the server.
      */
     String getPassword() {
@@ -576,7 +620,7 @@ public class ConnectionConfiguration implements Cloneable {
 
     /**
      * Returns the resource to use when trying to reconnect to the server.
-     *
+     * 
      * @return the resource to use when trying to reconnect to the server.
      */
     String getResource() {
@@ -584,9 +628,11 @@ public class ConnectionConfiguration implements Cloneable {
     }
 
     /**
-     * Returns true if an available presence should be sent when logging in while reconnecting.
-     *
-     * @return true if an available presence should be sent when logging in while reconnecting
+     * Returns true if an available presence should be sent when logging in
+     * while reconnecting.
+     * 
+     * @return true if an available presence should be sent when logging in
+     *         while reconnecting
      */
     boolean isSendPresence() {
         return sendPresence;
@@ -602,7 +648,7 @@ public class ConnectionConfiguration implements Cloneable {
         hostAddresses = new ArrayList<HostAddress>(1);
         HostAddress hostAddress;
         try {
-             hostAddress = new HostAddress(host, port);
+            hostAddress = new HostAddress(host, port);
         } catch (Exception e) {
             throw new IllegalStateException(e);
         }

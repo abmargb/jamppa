@@ -20,7 +20,7 @@ import org.jivesoftware.smack.SASLAuthentication;
 
 /**
  * Implementation of the SASL CRAM-MD5 mechanism
- *
+ * 
  * @author Jay Kline
  */
 public class SASLCramMD5Mechanism extends SASLMechanism {

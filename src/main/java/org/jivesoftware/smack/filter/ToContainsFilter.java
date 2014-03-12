@@ -20,9 +20,10 @@ package org.jivesoftware.smack.filter;
 import org.xmpp.packet.Packet;
 
 /**
- * Filters for packets where the "to" field contains a specified value. For example,
- * the filter could be used to listen for all packets sent to a group chat nickname.
- *
+ * Filters for packets where the "to" field contains a specified value. For
+ * example, the filter could be used to listen for all packets sent to a group
+ * chat nickname.
+ * 
  * @author Matt Tucker
  */
 public class ToContainsFilter implements PacketFilter {
@@ -31,8 +32,9 @@ public class ToContainsFilter implements PacketFilter {
 
     /**
      * Creates a "to" contains filter using the "to" field part.
-     *
-     * @param to the to field value the packet must contain.
+     * 
+     * @param to
+     *            the to field value the packet must contain.
      */
     public ToContainsFilter(String to) {
         if (to == null) {
@@ -44,8 +46,7 @@ public class ToContainsFilter implements PacketFilter {
     public boolean accept(Packet packet) {
         if (packet.getTo() == null) {
             return false;
-        }
-        else {
+        } else {
             return packet.getTo().toFullJID().toLowerCase().indexOf(to) != -1;
         }
     }

@@ -36,27 +36,30 @@ import org.xmpp.packet.Message.Type;
 import org.xmpp.packet.Packet;
 
 /**
- * The chat manager keeps track of references to all current chats. It will not hold any references
- * in memory on its own so it is necessary to keep a reference to the chat object itself. To be
- * made aware of new chats, register a listener by calling {@link #addChatListener(ChatManagerListener)}.
- *
+ * The chat manager keeps track of references to all current chats. It will not
+ * hold any references in memory on its own so it is necessary to keep a
+ * reference to the chat object itself. To be made aware of new chats, register
+ * a listener by calling {@link #addChatListener(ChatManagerListener)}.
+ * 
  * @author Alexander Wenckus
  */
 public class ChatManager {
     /*
-     * Sets the default behaviour for allowing 'normal' messages to be used in chats. As some clients don't set
-     * the message type to chat, the type normal has to be accepted to allow chats with these clients.
+     * Sets the default behaviour for allowing 'normal' messages to be used in
+     * chats. As some clients don't set the message type to chat, the type
+     * normal has to be accepted to allow chats with these clients.
      */
     private static boolean defaultIsNormalInclude = true;
-    
+
     /*
-     * Sets the default behaviour for how to match chats when there is NO thread id in the incoming message.
+     * Sets the default behaviour for how to match chats when there is NO thread
+     * id in the incoming message.
      */
     private static MatchMode defaultMatchMode = MatchMode.BARE_JID;
-    
+
     /**
-     * Defines the different modes under which a match will be attempted with an existing chat when
-     * the incoming message does not have a thread id.
+     * Defines the different modes under which a match will be attempted with an
+     * existing chat when the incoming message does not have a thread id.
      */
     public enum MatchMode {
         /**
@@ -64,49 +67,52 @@ public class ChatManager {
          */
         NONE,
         /**
-         * Will match on the JID in the from field of the message. 
+         * Will match on the JID in the from field of the message.
          */
         SUPPLIED_JID,
         /**
-         * Will attempt to match on the JID in the from field, and then attempt the base JID if no match was found.
-         * This is the most lenient matching.
+         * Will attempt to match on the JID in the from field, and then attempt
+         * the base JID if no match was found. This is the most lenient
+         * matching.
          */
-        BARE_JID; 
+        BARE_JID;
     }
-    
+
     /*
-     * Determines whether incoming messages of type normal can create chats. 
+     * Determines whether incoming messages of type normal can create chats.
      */
     private boolean normalIncluded = defaultIsNormalInclude;
-    
+
     /*
-     * Determines how incoming message with no thread will be matched to existing chats.
+     * Determines how incoming message with no thread will be matched to
+     * existing chats.
      */
     private MatchMode matchMode = defaultMatchMode;
-    
+
     /**
      * Maps thread ID to chat.
      */
-    private Map<String, Chat> threadChats = Collections.synchronizedMap(new ReferenceMap<String, Chat>(ReferenceMap.HARD,
-            ReferenceMap.WEAK));
+    private Map<String, Chat> threadChats = Collections
+            .synchronizedMap(new ReferenceMap<String, Chat>(ReferenceMap.HARD,
+                    ReferenceMap.WEAK));
 
     /**
      * Maps jids to chats
      */
-    private Map<String, Chat> jidChats = Collections.synchronizedMap(new ReferenceMap<String, Chat>(ReferenceMap.HARD,
-            ReferenceMap.WEAK));
+    private Map<String, Chat> jidChats = Collections
+            .synchronizedMap(new ReferenceMap<String, Chat>(ReferenceMap.HARD,
+                    ReferenceMap.WEAK));
 
     /**
      * Maps base jids to chats
      */
-    private Map<String, Chat> baseJidChats = Collections.synchronizedMap(new ReferenceMap<String, Chat>(ReferenceMap.HARD,
-	    ReferenceMap.WEAK));
+    private Map<String, Chat> baseJidChats = Collections
+            .synchronizedMap(new ReferenceMap<String, Chat>(ReferenceMap.HARD,
+                    ReferenceMap.WEAK));
 
-    private Set<ChatManagerListener> chatManagerListeners
-            = new CopyOnWriteArraySet<ChatManagerListener>();
+    private Set<ChatManagerListener> chatManagerListeners = new CopyOnWriteArraySet<ChatManagerListener>();
 
-    private Map<PacketInterceptor, PacketFilter> interceptors
-            = new WeakHashMap<PacketInterceptor, PacketFilter>();
+    private Map<PacketInterceptor, PacketFilter> interceptors = new WeakHashMap<PacketInterceptor, PacketFilter>();
 
     private Connection connection;
 
@@ -119,10 +125,11 @@ public class ChatManager {
                     return false;
                 }
                 Message.Type messageType = ((Message) packet).getType();
-                return (messageType == Type.chat) || (normalIncluded ? messageType == Type.normal : false);
+                return (messageType == Type.chat)
+                        || (normalIncluded ? messageType == Type.normal : false);
             }
         };
-        
+
         // Add a listener for all message packets so that we can deliver
         // messages to the best Chat instance available.
         connection.addPacketListener(new PacketListener() {
@@ -130,13 +137,12 @@ public class ChatManager {
                 Message message = (Message) packet;
                 Chat chat;
                 if (message.getThread() == null) {
-                	chat = getUserChat(message.getFrom().toFullJID());
-                }
-                else {
+                    chat = getUserChat(message.getFrom().toFullJID());
+                } else {
                     chat = getThreadChat(message.getThread());
                 }
 
-                if(chat == null) {
+                if (chat == null) {
                     chat = createChat(message);
                 }
                 deliverMessage(chat, message);
@@ -145,8 +151,8 @@ public class ChatManager {
     }
 
     /**
-     * Determines whether incoming messages of type <i>normal</i> will be used for creating new chats or matching
-     * a message to existing ones.
+     * Determines whether incoming messages of type <i>normal</i> will be used
+     * for creating new chats or matching a message to existing ones.
      * 
      * @return true if normal is allowed, false otherwise.
      */
@@ -155,17 +161,19 @@ public class ChatManager {
     }
 
     /**
-     * Sets whether to allow incoming messages of type <i>normal</i> to be used for creating new chats or matching
-     * a message to an existing one.
+     * Sets whether to allow incoming messages of type <i>normal</i> to be used
+     * for creating new chats or matching a message to an existing one.
      * 
-     * @param normalIncluded true to allow normal, false otherwise.
+     * @param normalIncluded
+     *            true to allow normal, false otherwise.
      */
     public void setNormalIncluded(boolean normalIncluded) {
         this.normalIncluded = normalIncluded;
     }
 
     /**
-     * Gets the current mode for matching messages with <b>NO</b> thread id to existing chats.
+     * Gets the current mode for matching messages with <b>NO</b> thread id to
+     * existing chats.
      * 
      * @return The current mode.
      */
@@ -174,9 +182,11 @@ public class ChatManager {
     }
 
     /**
-     * Sets the mode for matching messages with <b>NO</b> thread id to existing chats.
+     * Sets the mode for matching messages with <b>NO</b> thread id to existing
+     * chats.
      * 
-     * @param matchMode The mode to set.
+     * @param matchMode
+     *            The mode to set.
      */
     public void setMatchMode(MatchMode matchMode) {
         this.matchMode = matchMode;
@@ -184,9 +194,12 @@ public class ChatManager {
 
     /**
      * Creates a new chat and returns it.
-     *
-     * @param userJID the user this chat is with.
-     * @param listener the listener which will listen for new messages from this chat.
+     * 
+     * @param userJID
+     *            the user this chat is with.
+     * @param listener
+     *            the listener which will listen for new messages from this
+     *            chat.
      * @return the created chat.
      */
     public Chat createChat(String userJID, MessageListener listener) {
@@ -196,17 +209,21 @@ public class ChatManager {
     /**
      * Creates a new chat using the specified thread ID, then returns it.
      * 
-     * @param userJID the jid of the user this chat is with
-     * @param thread the thread of the created chat.
-     * @param listener the listener to add to the chat
+     * @param userJID
+     *            the jid of the user this chat is with
+     * @param thread
+     *            the thread of the created chat.
+     * @param listener
+     *            the listener to add to the chat
      * @return the created chat.
      */
-    public Chat createChat(String userJID, String thread, MessageListener listener) {
+    public Chat createChat(String userJID, String thread,
+            MessageListener listener) {
         if (thread == null) {
             thread = nextID();
         }
         Chat chat = threadChats.get(thread);
-        if(chat != null) {
+        if (chat != null) {
             throw new IllegalArgumentException("ThreadID is already used");
         }
         chat = createChat(userJID, thread, true);
@@ -214,13 +231,14 @@ public class ChatManager {
         return chat;
     }
 
-    private Chat createChat(String userJID, String threadID, boolean createdLocally) {
+    private Chat createChat(String userJID, String threadID,
+            boolean createdLocally) {
         Chat chat = new Chat(this, userJID, threadID);
         threadChats.put(threadID, chat);
         jidChats.put(userJID, chat);
         baseJidChats.put(StringUtils.parseBareAddress(userJID), chat);
 
-        for(ChatManagerListener listener : chatManagerListeners) {
+        for (ChatManagerListener listener : chatManagerListeners) {
             listener.chatCreated(chat, createdLocally);
         }
 
@@ -229,7 +247,7 @@ public class ChatManager {
 
     private Chat createChat(Message message) {
         String threadID = message.getThread();
-        if(threadID == null) {
+        if (threadID == null) {
             threadID = nextID();
         }
         String userJID = message.getFrom().toFullJID();
@@ -238,21 +256,22 @@ public class ChatManager {
     }
 
     /**
-     * Try to get a matching chat for the given user JID, based on the {@link MatchMode}.
-     * <li>NONE - return null
-     * <li>SUPPLIED_JID - match the jid in the from field of the message exactly.
-     * <li>BARE_JID - if not match for from field, try the bare jid. 
+     * Try to get a matching chat for the given user JID, based on the
+     * {@link MatchMode}. <li>NONE - return null <li>SUPPLIED_JID - match the
+     * jid in the from field of the message exactly. <li>BARE_JID - if not match
+     * for from field, try the bare jid.
      * 
-     * @param userJID jid in the from field of message.
+     * @param userJID
+     *            jid in the from field of message.
      * @return Matching chat, or null if no match found.
      */
     private Chat getUserChat(String userJID) {
         if (matchMode == MatchMode.NONE) {
             return null;
         }
-        
+
         Chat match = jidChats.get(userJID);
-	
+
         if (match == null && (matchMode == MatchMode.BARE_JID)) {
             match = baseJidChats.get(StringUtils.parseBareAddress(userJID));
         }
@@ -264,29 +283,33 @@ public class ChatManager {
     }
 
     /**
-     * Register a new listener with the ChatManager to recieve events related to chats.
-     *
-     * @param listener the listener.
+     * Register a new listener with the ChatManager to recieve events related to
+     * chats.
+     * 
+     * @param listener
+     *            the listener.
      */
     public void addChatListener(ChatManagerListener listener) {
         chatManagerListeners.add(listener);
     }
 
     /**
-     * Removes a listener, it will no longer be notified of new events related to chats.
-     *
-     * @param listener the listener that is being removed
+     * Removes a listener, it will no longer be notified of new events related
+     * to chats.
+     * 
+     * @param listener
+     *            the listener that is being removed
      */
     public void removeChatListener(ChatManagerListener listener) {
         chatManagerListeners.remove(listener);
     }
 
     /**
-     * Returns an unmodifiable collection of all chat listeners currently registered with this
-     * manager.
-     *
-     * @return an unmodifiable collection of all chat listeners currently registered with this
-     * manager.
+     * Returns an unmodifiable collection of all chat listeners currently
+     * registered with this manager.
+     * 
+     * @return an unmodifiable collection of all chat listeners currently
+     *         registered with this manager.
      */
     public Collection<ChatManagerListener> getChatListeners() {
         return Collections.unmodifiableCollection(chatManagerListeners);
@@ -298,9 +321,10 @@ public class ChatManager {
     }
 
     void sendMessage(Chat chat, Message message) {
-        for(Map.Entry<PacketInterceptor, PacketFilter> interceptor : interceptors.entrySet()) {
+        for (Map.Entry<PacketInterceptor, PacketFilter> interceptor : interceptors
+                .entrySet()) {
             PacketFilter filter = interceptor.getValue();
-            if(filter != null && filter.accept(message)) {
+            if (filter != null && filter.accept(message)) {
                 interceptor.getKey().interceptPacket(message);
             }
         }
@@ -312,38 +336,42 @@ public class ChatManager {
     }
 
     PacketCollector createPacketCollector(Chat chat) {
-        return connection.createPacketCollector(new AndFilter(new ThreadFilter(chat.getThreadID()), 
-                new FromContainsFilter(chat.getParticipant())));
+        return connection.createPacketCollector(new AndFilter(new ThreadFilter(
+                chat.getThreadID()), new FromContainsFilter(chat
+                .getParticipant())));
     }
 
     /**
      * Adds an interceptor which intercepts any messages sent through chats.
-     *
-     * @param packetInterceptor the interceptor.
+     * 
+     * @param packetInterceptor
+     *            the interceptor.
      */
-    public void addOutgoingMessageInterceptor(PacketInterceptor packetInterceptor) {
+    public void addOutgoingMessageInterceptor(
+            PacketInterceptor packetInterceptor) {
         addOutgoingMessageInterceptor(packetInterceptor, null);
     }
 
-    public void addOutgoingMessageInterceptor(PacketInterceptor packetInterceptor, PacketFilter filter) {
+    public void addOutgoingMessageInterceptor(
+            PacketInterceptor packetInterceptor, PacketFilter filter) {
         if (packetInterceptor != null) {
             interceptors.put(packetInterceptor, filter);
         }
     }
-    
+
     /**
      * Returns a unique id.
-     *
+     * 
      * @return the next id.
      */
     private static String nextID() {
         return UUID.randomUUID().toString();
     }
-    
+
     public static void setDefaultMatchMode(MatchMode mode) {
         defaultMatchMode = mode;
     }
-    
+
     public static void setDefaultIsNormalIncluded(boolean allowNormal) {
         defaultIsNormalInclude = allowNormal;
     }

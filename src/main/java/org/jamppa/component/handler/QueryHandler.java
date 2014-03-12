@@ -24,12 +24,13 @@ import org.xmpp.packet.IQ;
  */
 public interface QueryHandler {
 
-	IQ handle(IQ query);
-	
-	String getNamespace();
-	
-	/**
-	 * @param packetSender the packetSender to set
-	 */
-	public void setPacketSender(PacketSender packetSender);
+    IQ handle(IQ query);
+
+    String getNamespace();
+
+    /**
+     * @param packetSender
+     *            the packetSender to set
+     */
+    public void setPacketSender(PacketSender packetSender);
 }

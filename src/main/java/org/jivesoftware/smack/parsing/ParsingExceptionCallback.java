@@ -20,15 +20,18 @@ package org.jivesoftware.smack.parsing;
 /**
  * Base class to receive parsing exceptions.
  * 
- * If this class is used as callback, then Smack will silently ignore the stanza that caused the parsing exception and
- * place the parser after the faulty stanza.
+ * If this class is used as callback, then Smack will silently ignore the stanza
+ * that caused the parsing exception and place the parser after the faulty
+ * stanza.
  * 
- * Subclasses may or may not override certain methods of this class. Each of these methods will receive the exception
- * that caused the parsing error and an instance of an Unparsed Packet type. The latter can be used to inspect the
- * stanza that caused the parsing error by using the getContent() (for example {@link UnparsedIQ#getContent()})
- * method.
+ * Subclasses may or may not override certain methods of this class. Each of
+ * these methods will receive the exception that caused the parsing error and an
+ * instance of an Unparsed Packet type. The latter can be used to inspect the
+ * stanza that caused the parsing error by using the getContent() (for example
+ * {@link UnparsedIQ#getContent()}) method.
  * 
- * Smack provides 2 predefined ParsingExceptionCallback's: {@link ExceptionLoggingCallback} and {@link ExceptionThrowingCallback}.
+ * Smack provides 2 predefined ParsingExceptionCallback's:
+ * {@link ExceptionLoggingCallback} and {@link ExceptionThrowingCallback}.
  * 
  * @author Florian Schmaus
  * 
@@ -39,9 +42,10 @@ public abstract class ParsingExceptionCallback {
      * Called when parsing an message stanza caused an exception.
      * 
      * @param stanzaData
-     * the raw message stanza data that caused the exception
+     *            the raw message stanza data that caused the exception
      * @throws Exception
      */
-    public void handleUnparsablePacket(UnparsablePacket stanzaData) throws Exception {
+    public void handleUnparsablePacket(UnparsablePacket stanzaData)
+            throws Exception {
     }
 }

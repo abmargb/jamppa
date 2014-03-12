@@ -26,13 +26,14 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 /**
- * This class provides XMPP "zlib" compression with the help of the Deflater class of the Java API. Note that the method
- * needed is available since Java7, so it will only work with Java7 or higher (hence it's name).
+ * This class provides XMPP "zlib" compression with the help of the Deflater
+ * class of the Java API. Note that the method needed is available since Java7,
+ * so it will only work with Java7 or higher (hence it's name).
  * 
  * @author Florian Schmaus
  * @see <a
- * href="http://docs.oracle.com/javase/7/docs/api/java/util/zip/Deflater.html#deflate(byte[], int, int, int)">The
- * required deflate() method</a>
+ *      href="http://docs.oracle.com/javase/7/docs/api/java/util/zip/Deflater.html#deflate(byte[], int, int, int)">The
+ *      required deflate() method</a>
  * 
  */
 public class Java7ZlibInputOutputStream extends XMPPInputOutputStream {
@@ -43,7 +44,8 @@ public class Java7ZlibInputOutputStream extends XMPPInputOutputStream {
     static {
         Method m = null;
         try {
-            m = Deflater.class.getMethod("deflate", byte[].class, int.class, int.class, int.class);
+            m = Deflater.class.getMethod("deflate", byte[].class, int.class,
+                    int.class, int.class);
         } catch (SecurityException e) {
         } catch (NoSuchMethodException e) {
         }
@@ -64,8 +66,9 @@ public class Java7ZlibInputOutputStream extends XMPPInputOutputStream {
     public InputStream getInputStream(InputStream inputStream) {
         return new InflaterInputStream(inputStream, new Inflater(), 512) {
             /**
-             * Provide a more InputStream compatible version. A return value of 1 means that it is likely to read one
-             * byte without blocking, 0 means that the system is known to block for more input.
+             * Provide a more InputStream compatible version. A return value of
+             * 1 means that it is likely to read one byte without blocking, 0
+             * means that the system is known to block for more input.
              * 
              * @return 0 if no data is available, 1 otherwise
              * @throws IOException
@@ -73,14 +76,17 @@ public class Java7ZlibInputOutputStream extends XMPPInputOutputStream {
             @Override
             public int available() throws IOException {
                 /*
-                 * aSmack related remark (where KXmlParser is used):
-                 * This is one of the funny code blocks. InflaterInputStream.available violates the contract of
-                 * InputStream.available, which breaks kXML2.
+                 * aSmack related remark (where KXmlParser is used): This is one
+                 * of the funny code blocks. InflaterInputStream.available
+                 * violates the contract of InputStream.available, which breaks
+                 * kXML2.
                  * 
-                 * I'm not sure who's to blame, oracle/sun for a broken api or the google guys for mixing a sun bug with
-                 * a xml reader that can't handle it....
+                 * I'm not sure who's to blame, oracle/sun for a broken api or
+                 * the google guys for mixing a sun bug with a xml reader that
+                 * can't handle it....
                  * 
-                 * Anyway, this simple if breaks suns distorted reality, but helps to use the api as intended.
+                 * Anyway, this simple if breaks suns distorted reality, but
+                 * helps to use the api as intended.
                  */
                 if (inf.needsInput()) {
                     return 0;
@@ -92,7 +98,8 @@ public class Java7ZlibInputOutputStream extends XMPPInputOutputStream {
 
     @Override
     public OutputStream getOutputStream(OutputStream outputStream) {
-        return new DeflaterOutputStream(outputStream, new Deflater(compressionLevel)) {
+        return new DeflaterOutputStream(outputStream, new Deflater(
+                compressionLevel)) {
             public void flush() throws IOException {
                 if (!supported) {
                     super.flush();
@@ -108,7 +115,8 @@ public class Java7ZlibInputOutputStream extends XMPPInputOutputStream {
                 }
                 try {
                     do {
-                        count = (Integer) method.invoke(def, buf, 0, buf.length, 2);
+                        count = (Integer) method.invoke(def, buf, 0,
+                                buf.length, 2);
                         out.write(buf, 0, count);
                     } while (count > 0);
                 } catch (IllegalArgumentException e) {

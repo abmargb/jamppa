@@ -27,19 +27,21 @@ import org.apache.log4j.Logger;
 import org.xmpp.packet.Packet;
 
 /**
- * Writes packets to a XMPP server. Packets are sent using a dedicated thread. Packet
- * interceptors can be registered to dynamically modify packets before they're actually
- * sent. Packet listeners can be registered to listen for all outgoing packets.
- *
+ * Writes packets to a XMPP server. Packets are sent using a dedicated thread.
+ * Packet interceptors can be registered to dynamically modify packets before
+ * they're actually sent. Packet listeners can be registered to listen for all
+ * outgoing packets.
+ * 
  * @see Connection#addPacketInterceptor
  * @see Connection#addPacketSendingListener
- *
+ * 
  * @author Matt Tucker
  */
 class PacketWriter {
-    
-	private static Logger LOGGER = Logger.getLogger(PacketWriter.class.getName());
-    
+
+    private static Logger LOGGER = Logger.getLogger(PacketWriter.class
+            .getName());
+
     private Thread writerThread;
     private Writer writer;
     private XMPPConnection connection;
@@ -48,8 +50,9 @@ class PacketWriter {
 
     /**
      * Creates a new packet writer with the specified connection.
-     *
-     * @param connection the connection.
+     * 
+     * @param connection
+     *            the connection.
      */
     protected PacketWriter(XMPPConnection connection) {
         this.queue = new ArrayBlockingQueue<Packet>(500, true);
@@ -57,10 +60,11 @@ class PacketWriter {
         init();
     }
 
-    /** 
-    * Initializes the writer in order to be used. It is called at the first connection and also 
-    * is invoked if the connection is disconnected by an error.
-    */ 
+    /**
+     * Initializes the writer in order to be used. It is called at the first
+     * connection and also is invoked if the connection is disconnected by an
+     * error.
+     */
     protected void init() {
         this.writer = connection.writer;
         done = false;
@@ -70,33 +74,39 @@ class PacketWriter {
                 writePackets(this);
             }
         };
-        writerThread.setName("Smack Packet Writer (" + connection.connectionCounterValue + ")");
+        writerThread.setName("Smack Packet Writer ("
+                + connection.connectionCounterValue + ")");
         writerThread.setDaemon(true);
     }
 
     /**
      * Sends the specified packet to the server.
-     *
-     * @param packet the packet to send.
+     * 
+     * @param packet
+     *            the packet to send.
      */
     public void sendPacket(Packet packet) {
         if (!done) {
-            // Invoke interceptors for the new packet that is about to be sent. Interceptors
+            // Invoke interceptors for the new packet that is about to be sent.
+            // Interceptors
             // may modify the content of the packet.
             connection.firePacketInterceptors(packet);
 
             try {
                 queue.put(packet);
-            }
-            catch (InterruptedException ie) {
-                LOGGER.log(Level.ERROR, "Failed to queue packet to send to server: " + packet.toString(), ie);
+            } catch (InterruptedException ie) {
+                LOGGER.log(
+                        Level.ERROR,
+                        "Failed to queue packet to send to server: "
+                                + packet.toString(), ie);
                 return;
             }
             synchronized (queue) {
                 queue.notifyAll();
             }
 
-            // Process packet writer listeners. Note that we're using the sending
+            // Process packet writer listeners. Note that we're using the
+            // sending
             // thread so it's expected that listeners are fast.
             connection.firePacketSendingListeners(packet);
         }
@@ -116,8 +126,8 @@ class PacketWriter {
     }
 
     /**
-     * Shuts down the packet writer. Once this method has been called, no further
-     * packets will be written to the server.
+     * Shuts down the packet writer. Once this method has been called, no
+     * further packets will be written to the server.
      */
     public void shutdown() {
         done = true;
@@ -128,7 +138,7 @@ class PacketWriter {
 
     /**
      * Returns the next available packet from the queue for writing.
-     *
+     * 
      * @return the next packet for writing.
      */
     private Packet nextPacket() {
@@ -139,8 +149,7 @@ class PacketWriter {
                 synchronized (queue) {
                     queue.wait();
                 }
-            }
-            catch (InterruptedException ie) {
+            } catch (InterruptedException ie) {
                 // Do nothing
             }
         }
@@ -155,7 +164,7 @@ class PacketWriter {
             while (!done && (writerThread == thisThread)) {
                 Packet packet = nextPacket();
                 if (packet != null) {
-                	LOGGER.debug("Sending packet " + packet.toXML());
+                    LOGGER.debug("Sending packet " + packet.toXML());
                     writer.write(packet.toXML());
 
                     if (queue.isEmpty()) {
@@ -163,8 +172,10 @@ class PacketWriter {
                     }
                 }
             }
-            // Flush out the rest of the queue. If the queue is extremely large, it's possible
-            // we won't have time to entirely flush it before the socket is forced closed
+            // Flush out the rest of the queue. If the queue is extremely large,
+            // it's possible
+            // we won't have time to entirely flush it before the socket is
+            // forced closed
             // by the shutdown process.
             try {
                 while (!queue.isEmpty()) {
@@ -172,8 +183,7 @@ class PacketWriter {
                     writer.write(packet.toXML());
                 }
                 writer.flush();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 LOGGER.warn("Error flushing queue during shutdown, ignore and continue");
             }
 
@@ -184,44 +194,43 @@ class PacketWriter {
             try {
                 writer.write("</stream:stream>");
                 writer.flush();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // Do nothing
-            }
-            finally {
+            } finally {
                 try {
                     writer.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     // Do nothing
                 }
             }
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             // The exception can be ignored if the the connection is 'done'
             // or if the it was caused because the socket got closed
             if (!(done || connection.isSocketClosed())) {
                 done = true;
-                // packetReader could be set to null by an concurrent disconnect() call.
+                // packetReader could be set to null by an concurrent
+                // disconnect() call.
                 // Therefore Prevent NPE exceptions by checking packetReader.
                 if (connection.packetReader != null) {
-                        connection.notifyConnectionError(ioe);
+                    connection.notifyConnectionError(ioe);
                 }
             }
         }
     }
 
     /**
-     * Sends to the server a new stream element. This operation may be requested several times
-     * so we need to encapsulate the logic in one place. This message will be sent while doing
-     * TLS, SASL and resource binding.
-     *
-     * @throws IOException If an error occurs while sending the stanza to the server.
+     * Sends to the server a new stream element. This operation may be requested
+     * several times so we need to encapsulate the logic in one place. This
+     * message will be sent while doing TLS, SASL and resource binding.
+     * 
+     * @throws IOException
+     *             If an error occurs while sending the stanza to the server.
      */
     void openStream() throws IOException {
         StringBuilder stream = new StringBuilder();
         stream.append("<stream:stream");
-        stream.append(" to=\"").append(connection.getServiceName()).append("\"");
+        stream.append(" to=\"").append(connection.getServiceName())
+                .append("\"");
         stream.append(" xmlns=\"jabber:client\"");
         stream.append(" xmlns:stream=\"http://etherx.jabber.org/streams\"");
         stream.append(" version=\"1.0\">");

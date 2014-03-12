@@ -29,34 +29,34 @@ import org.xmpp.packet.Packet;
  * @author Robin Collier
  */
 final public class SyncPacketSend {
-	private SyncPacketSend() {
-	}
+    private SyncPacketSend() {
+    }
 
-	static public Packet getReply(Connection connection, Packet packet,
-			long timeout) throws XMPPException {
-		PacketFilter responseFilter = new PacketIDFilter(packet.getID());
-		PacketCollector response = connection
-				.createPacketCollector(responseFilter);
+    static public Packet getReply(Connection connection, Packet packet,
+            long timeout) throws XMPPException {
+        PacketFilter responseFilter = new PacketIDFilter(packet.getID());
+        PacketCollector response = connection
+                .createPacketCollector(responseFilter);
 
-		connection.sendPacket(packet);
+        connection.sendPacket(packet);
 
-		// Wait up to a certain number of seconds for a reply.
-		Packet result = response.nextResult(timeout);
+        // Wait up to a certain number of seconds for a reply.
+        Packet result = response.nextResult(timeout);
 
-		// Stop queuing results
-		response.cancel();
+        // Stop queuing results
+        response.cancel();
 
-		if (result == null) {
-			throw new XMPPException(SmackError.NO_RESPONSE_FROM_SERVER);
-		} else if (result.getError() != null) {
-			throw new XMPPException(result.getError());
-		}
-		return result;
-	}
+        if (result == null) {
+            throw new XMPPException(SmackError.NO_RESPONSE_FROM_SERVER);
+        } else if (result.getError() != null) {
+            throw new XMPPException(result.getError());
+        }
+        return result;
+    }
 
-	static public Packet getReply(Connection connection, Packet packet)
-			throws XMPPException {
-		return getReply(connection, packet,
-				SmackConfiguration.getPacketReplyTimeout());
-	}
+    static public Packet getReply(Connection connection, Packet packet)
+            throws XMPPException {
+        return getReply(connection, packet,
+                SmackConfiguration.getPacketReplyTimeout());
+    }
 }

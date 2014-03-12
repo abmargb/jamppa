@@ -21,18 +21,20 @@ public class HostAddress {
     private Exception exception;
 
     /**
-     * Creates a new HostAddress with the given FQDN. The port will be set to the default XMPP client port: 5222
+     * Creates a new HostAddress with the given FQDN. The port will be set to
+     * the default XMPP client port: 5222
      * 
-     * @param fqdn Fully qualified domain name.
-     * @throws IllegalArgumentException If the fqdn is null.
+     * @param fqdn
+     *            Fully qualified domain name.
+     * @throws IllegalArgumentException
+     *             If the fqdn is null.
      */
     public HostAddress(String fqdn) {
         if (fqdn == null)
             throw new IllegalArgumentException("FQDN is null");
         if (fqdn.charAt(fqdn.length() - 1) == '.') {
             this.fqdn = fqdn.substring(0, fqdn.length() - 1);
-        }
-        else {
+        } else {
             this.fqdn = fqdn;
         }
         // Set port to the default port for XMPP client communication
@@ -40,17 +42,23 @@ public class HostAddress {
     }
 
     /**
-     * Creates a new HostAddress with the given FQDN. The port will be set to the default XMPP client port: 5222
+     * Creates a new HostAddress with the given FQDN. The port will be set to
+     * the default XMPP client port: 5222
      * 
-     * @param fqdn Fully qualified domain name.
-     * @param port The port to connect on.
-     * @throws IllegalArgumentException If the fqdn is null or port is out of valid range (0 - 65535).
+     * @param fqdn
+     *            Fully qualified domain name.
+     * @param port
+     *            The port to connect on.
+     * @throws IllegalArgumentException
+     *             If the fqdn is null or port is out of valid range (0 -
+     *             65535).
      */
     public HostAddress(String fqdn, int port) {
         this(fqdn);
         if (port < 0 || port > 65535)
             throw new IllegalArgumentException(
-                    "DNS SRV records weight must be a 16-bit unsiged integer (i.e. between 0-65535. Port was: " + port);
+                    "DNS SRV records weight must be a 16-bit unsiged integer (i.e. between 0-65535. Port was: "
+                            + port);
 
         this.port = port;
     }
@@ -100,8 +108,7 @@ public class HostAddress {
         String error;
         if (exception == null) {
             error = "No error logged";
-        }
-        else {
+        } else {
             error = exception.getMessage();
         }
         return toString() + " Exception: " + error;

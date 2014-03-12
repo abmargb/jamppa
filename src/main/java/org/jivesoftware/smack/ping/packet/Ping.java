@@ -23,19 +23,19 @@ public class Ping extends IQ {
 
     public static final String NAMESPACE = "urn:xmpp:ping";
     public static final String ELEMENT = "ping";
-    
+
     public Ping() {
         element.addElement(ELEMENT, NAMESPACE);
     }
-    
+
     public Ping(String to) {
-    	this();
+        this();
         setTo(to);
         setType(IQ.Type.get);
     }
 
-	public Ping(Element doc) {
-		super(doc);
-	}
-    
+    public Ping(Element doc) {
+        super(doc);
+    }
+
 }

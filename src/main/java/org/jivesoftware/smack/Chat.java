@@ -44,10 +44,13 @@ public class Chat {
 
     /**
      * Creates a new chat with the specified user and thread ID.
-     *
-     * @param chatManager the chatManager the chat will use.
-     * @param participant the user to chat with.
-     * @param threadID the thread ID to use.
+     * 
+     * @param chatManager
+     *            the chatManager the chat will use.
+     * @param participant
+     *            the user to chat with.
+     * @param threadID
+     *            the thread ID to use.
      */
     Chat(ChatManager chatManager, String participant, String threadID) {
         this.chatManager = chatManager;
@@ -57,9 +60,9 @@ public class Chat {
 
     /**
      * Returns the thread id associated with this chat, which corresponds to the
-     * <tt>thread</tt> field of XMPP messages. This method may return <tt>null</tt>
-     * if there is no thread ID is associated with this Chat.
-     *
+     * <tt>thread</tt> field of XMPP messages. This method may return
+     * <tt>null</tt> if there is no thread ID is associated with this Chat.
+     * 
      * @return the thread ID of this chat.
      */
     public String getThreadID() {
@@ -68,7 +71,7 @@ public class Chat {
 
     /**
      * Returns the name of the user the chat is with.
-     *
+     * 
      * @return the name of the user the chat is occuring with.
      */
     public String getParticipant() {
@@ -76,17 +79,19 @@ public class Chat {
     }
 
     /**
-     * Sends the specified text as a message to the other chat participant.
-     * This is a convenience method for:
-     *
+     * Sends the specified text as a message to the other chat participant. This
+     * is a convenience method for:
+     * 
      * <pre>
-     *     Message message = chat.createMessage();
-     *     message.setBody(messageText);
-     *     chat.sendMessage(message);
+     * Message message = chat.createMessage();
+     * message.setBody(messageText);
+     * chat.sendMessage(message);
      * </pre>
-     *
-     * @param text the text to send.
-     * @throws XMPPException if sending the message fails.
+     * 
+     * @param text
+     *            the text to send.
+     * @throws XMPPException
+     *             if sending the message fails.
      */
     public void sendMessage(String text) throws XMPPException {
         Message message = new Message();
@@ -99,13 +104,17 @@ public class Chat {
 
     /**
      * Sends a message to the other chat participant. The thread ID, recipient,
-     * and message type of the message will automatically set to those of this chat.
-     *
-     * @param message the message to send.
-     * @throws XMPPException if an error occurs sending the message.
+     * and message type of the message will automatically set to those of this
+     * chat.
+     * 
+     * @param message
+     *            the message to send.
+     * @throws XMPPException
+     *             if an error occurs sending the message.
      */
     public void sendMessage(Message message) throws XMPPException {
-        // Force the recipient, message type, and thread ID since the user elected
+        // Force the recipient, message type, and thread ID since the user
+        // elected
         // to send the message through this chat object.
         message.setTo(participant);
         message.setType(Message.Type.chat);
@@ -116,11 +125,12 @@ public class Chat {
     /**
      * Adds a packet listener that will be notified of any new messages in the
      * chat.
-     *
-     * @param listener a packet listener.
+     * 
+     * @param listener
+     *            a packet listener.
      */
     public void addMessageListener(MessageListener listener) {
-        if(listener == null) {
+        if (listener == null) {
             return;
         }
         // TODO these references should be weak.
@@ -132,19 +142,21 @@ public class Chat {
     }
 
     /**
-     * Returns an unmodifiable collection of all of the listeners registered with this chat.
-     *
-     * @return an unmodifiable collection of all of the listeners registered with this chat.
+     * Returns an unmodifiable collection of all of the listeners registered
+     * with this chat.
+     * 
+     * @return an unmodifiable collection of all of the listeners registered
+     *         with this chat.
      */
     public Collection<MessageListener> getListeners() {
         return Collections.unmodifiableCollection(listeners);
     }
 
     /**
-     * Creates a {@link org.jivesoftware.smack.PacketCollector} which will accumulate the Messages
-     * for this chat. Always cancel PacketCollectors when finished with them as they will accumulate
-     * messages indefinitely.
-     *
+     * Creates a {@link org.jivesoftware.smack.PacketCollector} which will
+     * accumulate the Messages for this chat. Always cancel PacketCollectors
+     * when finished with them as they will accumulate messages indefinitely.
+     * 
      * @return the PacketCollector which returns Messages for this chat.
      */
     public PacketCollector createCollector() {
@@ -152,12 +164,13 @@ public class Chat {
     }
 
     /**
-     * Delivers a message directly to this chat, which will add the message
-     * to the collector and deliver it to all listeners registered with the
-     * Chat. This is used by the Connection class to deliver messages
-     * without a thread ID.
-     *
-     * @param message the message.
+     * Delivers a message directly to this chat, which will add the message to
+     * the collector and deliver it to all listeners registered with the Chat.
+     * This is used by the Connection class to deliver messages without a thread
+     * ID.
+     * 
+     * @param message
+     *            the message.
      */
     void deliver(Message message) {
         // Because the collector and listeners are expecting a thread ID with
@@ -172,9 +185,10 @@ public class Chat {
 
     @Override
     public String toString() {
-        return "Chat [(participant=" + participant + "), (thread=" + threadID + ")]";
+        return "Chat [(participant=" + participant + "), (thread=" + threadID
+                + ")]";
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 1;
@@ -182,11 +196,11 @@ public class Chat {
         hash = hash * 31 + participant.hashCode();
         return hash;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Chat
-                && threadID.equals(((Chat)obj).getThreadID())
-                && participant.equals(((Chat)obj).getParticipant());
+                && threadID.equals(((Chat) obj).getThreadID())
+                && participant.equals(((Chat) obj).getParticipant());
     }
 }

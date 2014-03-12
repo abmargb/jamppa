@@ -21,8 +21,8 @@ import java.io.*;
 import java.util.*;
 
 /**
- * An ObservableReader is a wrapper on a Reader that notifies to its listeners when
- * reading character streams.
+ * An ObservableReader is a wrapper on a Reader that notifies to its listeners
+ * when reading character streams.
  * 
  * @author Gaston Dombiak
  */
@@ -34,7 +34,7 @@ public class ObservableReader extends Reader {
     public ObservableReader(Reader wrappedReader) {
         this.wrappedReader = wrappedReader;
     }
-        
+
     public int read(char[] cbuf, int off, int len) throws IOException {
         int count = wrappedReader.read(cbuf, off, len);
         if (count > 0) {
@@ -85,10 +85,11 @@ public class ObservableReader extends Reader {
     }
 
     /**
-     * Adds a reader listener to this reader that will be notified when
-     * new strings are read.
-     *
-     * @param readerListener a reader listener.
+     * Adds a reader listener to this reader that will be notified when new
+     * strings are read.
+     * 
+     * @param readerListener
+     *            a reader listener.
      */
     public void addReaderListener(ReaderListener readerListener) {
         if (readerListener == null) {
@@ -103,8 +104,9 @@ public class ObservableReader extends Reader {
 
     /**
      * Removes a reader listener from this reader.
-     *
-     * @param readerListener a reader listener.
+     * 
+     * @param readerListener
+     *            a reader listener.
      */
     public void removeReaderListener(ReaderListener readerListener) {
         synchronized (listeners) {

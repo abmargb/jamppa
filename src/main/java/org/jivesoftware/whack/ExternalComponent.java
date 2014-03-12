@@ -50,11 +50,12 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ExternalComponents are responsible for connecting and authenticating with a remote server and
- * for sending and processing received packets. In fact, an ExternalComponent is a wrapper on a
- * Component that provides remote connection capabilities. The actual processing of the packets is
- * done by the wrapped Component.
- *
+ * ExternalComponents are responsible for connecting and authenticating with a
+ * remote server and for sending and processing received packets. In fact, an
+ * ExternalComponent is a wrapper on a Component that provides remote connection
+ * capabilities. The actual processing of the packets is done by the wrapped
+ * Component.
+ * 
  * @author Gaston Dombiak
  */
 public class ExternalComponent implements Component {
@@ -78,22 +79,24 @@ public class ExternalComponent implements Component {
     private KeepAliveTask keepAliveTask;
     private TimeoutTask timeoutTask;
     /**
-     * Timestamp when the last stanza was sent to the server. This information is used
-     * by the keep alive process to only send heartbeats when the connection has been idle.
+     * Timestamp when the last stanza was sent to the server. This information
+     * is used by the keep alive process to only send heartbeats when the
+     * connection has been idle.
      */
     private long lastActive = System.currentTimeMillis();
 
     private String connectionID;
     /**
-     * Hold the full domain of this component. The full domain is composed by the subdomain plus
-     * the domain of the server. E.g. conference.jivesoftware.com. The domain may change after a
-     * connection has been established with the server.
+     * Hold the full domain of this component. The full domain is composed by
+     * the subdomain plus the domain of the server. E.g.
+     * conference.jivesoftware.com. The domain may change after a connection has
+     * been established with the server.
      */
     private String domain;
     /**
-     * Holds the subdomain that is associated to this component. The subdomain is the initial part
-     * of the domain. The subdomain cannot be affected after establishing a connection with the
-     * server. E.g. conference.
+     * Holds the subdomain that is associated to this component. The subdomain
+     * is the initial part of the domain. The subdomain cannot be affected after
+     * establishing a connection with the server. E.g. conference.
      */
     private String subdomain;
     /**
@@ -107,52 +110,65 @@ public class ExternalComponent implements Component {
      */
     private ThreadPoolExecutor threadPool;
     /**
-     * Thread that will read the XML from the socket and ask this component to process the read
-     * packets.
+     * Thread that will read the XML from the socket and ask this component to
+     * process the read packets.
      */
     private SocketReadThread readerThread;
 
     private Map<String, IQResultListener> resultListeners = new ConcurrentHashMap<String, IQResultListener>();
     private Map<String, Long> resultTimeout = new ConcurrentHashMap<String, Long>();
 
-    public ExternalComponent(Component component, ExternalComponentManager manager) {
-        // Be default create a pool of 25 threads to process the received requests
+    public ExternalComponent(Component component,
+            ExternalComponentManager manager) {
+        // Be default create a pool of 25 threads to process the received
+        // requests
         this(component, manager, 25);
     }
 
-    public ExternalComponent(Component component, ExternalComponentManager manager, int maxThreads) {
+    public ExternalComponent(Component component,
+            ExternalComponentManager manager, int maxThreads) {
         this.component = component;
         this.manager = manager;
 
-        // Create a pool of threads that will process requests received by this component. If more
-        // threads are required then the command will be executed on the SocketReadThread process
-        threadPool = new ThreadPoolExecutor(maxThreads, maxThreads, 15, TimeUnit.SECONDS,
-                        new LinkedBlockingQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
+        // Create a pool of threads that will process requests received by this
+        // component. If more
+        // threads are required then the command will be executed on the
+        // SocketReadThread process
+        threadPool = new ThreadPoolExecutor(maxThreads, maxThreads, 15,
+                TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),
+                new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     /**
-     * Generates a connection with the server and tries to authenticate. If an error occurs in any
-     * of the steps then a ComponentException is thrown.
-     *
-     * @param host          the host to connect with.
-     * @param port          the port to use.
-     * @param subdomain     the subdomain that this component will be handling.
-     * @throws ComponentException if an error happens during the connection and authentication steps.
+     * Generates a connection with the server and tries to authenticate. If an
+     * error occurs in any of the steps then a ComponentException is thrown.
+     * 
+     * @param host
+     *            the host to connect with.
+     * @param port
+     *            the port to use.
+     * @param subdomain
+     *            the subdomain that this component will be handling.
+     * @throws ComponentException
+     *             if an error happens during the connection and authentication
+     *             steps.
      */
-    public void connect(String host, int port, String subdomain) throws ComponentException {
+    public void connect(String host, int port, String subdomain)
+            throws ComponentException {
         try {
             // Open a socket to the server
             this.socket = new Socket();
-            socket.connect(new InetSocketAddress(host, port), manager.getConnectTimeout());
+            socket.connect(new InetSocketAddress(host, port),
+                    manager.getConnectTimeout());
             if (manager.getServerName() != null) {
                 this.domain = subdomain + "." + manager.getServerName();
-            }
-            else {
+            } else {
                 this.domain = subdomain;
             }
             this.subdomain = subdomain;
-            // Keep these variables that will be used in case a reconnection is required
-            this.host= host;
+            // Keep these variables that will be used in case a reconnection is
+            // required
+            this.host = host;
             this.port = port;
 
             try {
@@ -160,13 +176,14 @@ public class ExternalComponent implements Component {
                 reader = new XPPPacketReader();
                 reader.setXPPFactory(factory);
 
-                reader.getXPPParser().setInput(new InputStreamReader(socket.getInputStream(),
-                        CHARSET));
+                reader.getXPPParser()
+                        .setInput(
+                                new InputStreamReader(socket.getInputStream(),
+                                        CHARSET));
 
                 // Get a writer for sending the open stream tag
-                writer =
-                        new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),
-                                CHARSET));
+                writer = new BufferedWriter(new OutputStreamWriter(
+                        socket.getOutputStream(), CHARSET));
                 // Open the stream.
                 StringBuilder stream = new StringBuilder();
                 stream.append("<stream:stream");
@@ -196,7 +213,8 @@ public class ExternalComponent implements Component {
                 // Handshake with the server
                 stream = new StringBuilder();
                 stream.append("<handshake>");
-                stream.append(StringUtils.hash(connectionID + manager.getSecretKey(subdomain)));
+                stream.append(StringUtils.hash(connectionID
+                        + manager.getSecretKey(subdomain)));
                 stream.append("</handshake>");
                 writer.write(stream.toString());
                 writer.flush();
@@ -214,26 +232,27 @@ public class ExternalComponent implements Component {
                         throw new ComponentException(error);
                     }
                     // Everything went fine
-                    // Start keep alive thread to send every 30 seconds of inactivity a heart beat
+                    // Start keep alive thread to send every 30 seconds of
+                    // inactivity a heart beat
                     keepAliveTask = new KeepAliveTask();
-                    TaskEngine.getInstance().scheduleAtFixedRate(keepAliveTask, 15000, 30000);
+                    TaskEngine.getInstance().scheduleAtFixedRate(keepAliveTask,
+                            15000, 30000);
 
                     timeoutTask = new TimeoutTask();
-                    TaskEngine.getInstance().scheduleAtFixedRate(timeoutTask, 2000, 2000);
+                    TaskEngine.getInstance().scheduleAtFixedRate(timeoutTask,
+                            2000, 2000);
 
                 } catch (DocumentException e) {
                     try {
                         socket.close();
-                    }
-                    catch (IOException ioe) {
+                    } catch (IOException ioe) {
                         // Do nothing
                     }
                     throw new ComponentException(e);
                 } catch (XmlPullParserException e) {
                     try {
                         socket.close();
-                    }
-                    catch (IOException ioe) {
+                    } catch (IOException ioe) {
                         // Do nothing
                     }
                     throw new ComponentException(e);
@@ -241,27 +260,24 @@ public class ExternalComponent implements Component {
             } catch (XmlPullParserException e) {
                 try {
                     socket.close();
-                }
-                catch (IOException ioe) {
+                } catch (IOException ioe) {
                     // Do nothing
                 }
                 throw new ComponentException(e);
             }
-        }
-        catch (UnknownHostException uhe) {
+        } catch (UnknownHostException uhe) {
             try {
-                if (socket != null) socket.close();
-            }
-            catch (IOException e) {
+                if (socket != null)
+                    socket.close();
+            } catch (IOException e) {
                 // Do nothing
             }
             throw new ComponentException(uhe);
-        }
-        catch (IOException ioe) {
+        } catch (IOException ioe) {
             try {
-                if (socket != null) socket.close();
-            }
-            catch (IOException e) {
+                if (socket != null)
+                    socket.close();
+            } catch (IOException e) {
                 // Do nothing
             }
             throw new ComponentException(ioe);
@@ -281,10 +297,11 @@ public class ExternalComponent implements Component {
     }
 
     /**
-     * Returns the domain provided by this component in the connected server. The domain is
-     * composed by the subdomain plus the domain of the server. E.g. conference.jivesoftware.com.
-     * The domain may change after a connection has been established with the server.
-     *
+     * Returns the domain provided by this component in the connected server.
+     * The domain is composed by the subdomain plus the domain of the server.
+     * E.g. conference.jivesoftware.com. The domain may change after a
+     * connection has been established with the server.
+     * 
      * @return the domain provided by this component in the connected server.
      */
     public String getDomain() {
@@ -292,8 +309,9 @@ public class ExternalComponent implements Component {
     }
 
     /**
-     * Returns the subdomain provided by this component in the connected server. E.g. conference.
-     *
+     * Returns the subdomain provided by this component in the connected server.
+     * E.g. conference.
+     * 
      * @return the subdomain provided by this component in the connected server.
      */
     public String getSubdomain() {
@@ -302,7 +320,7 @@ public class ExternalComponent implements Component {
 
     /**
      * Returns the ComponentManager that created this component.
-     *
+     * 
      * @return the ComponentManager that created this component.
      */
     ExternalComponentManager getManager() {
@@ -316,15 +334,18 @@ public class ExternalComponent implements Component {
                     IQ iq = (IQ) packet;
                     IQ.Type iqType = iq.getType();
                     if (IQ.Type.result == iqType || IQ.Type.error == iqType) {
-                        // The server got an answer to an IQ packet that was sent from the component
-                        IQResultListener iqResultListener = resultListeners.remove(iq.getID());
+                        // The server got an answer to an IQ packet that was
+                        // sent from the component
+                        IQResultListener iqResultListener = resultListeners
+                                .remove(iq.getID());
                         resultTimeout.remove(iq.getID());
                         if (iqResultListener != null) {
                             try {
                                 iqResultListener.receivedAnswer(iq);
-                            }
-                            catch (Exception e) {
-                                 manager.getLog().error("Error processing answer of remote entity", e);
+                            } catch (Exception e) {
+                                manager.getLog()
+                                        .error("Error processing answer of remote entity",
+                                                e);
                             }
                             return;
                         }
@@ -342,8 +363,7 @@ public class ExternalComponent implements Component {
                 xmlSerializer.flush();
                 // Keep track of the last time a stanza was sent to the server
                 lastActive = System.currentTimeMillis();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 // Log the exception
                 manager.getLog().error(e);
                 if (!shutdown) {
@@ -354,7 +374,8 @@ public class ExternalComponent implements Component {
         }
     }
 
-    public void initialize(JID jid, ComponentManager componentManager) throws ComponentException {
+    public void initialize(JID jid, ComponentManager componentManager)
+            throws ComponentException {
         component.initialize(jid, componentManager);
     }
 
@@ -385,32 +406,29 @@ public class ExternalComponent implements Component {
                     try {
                         writer.write("</stream:stream>");
                         xmlSerializer.flush();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         // Do nothing
                     }
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 // Do nothing
             }
             try {
                 socket.close();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 manager.getLog().error(e);
             }
         }
     }
 
     /**
-     * Notification message that the connection with the server was lost unexpectedly. We will try
-     * to reestablish the connection for ever until the connection has been reestablished or this
-     * thread has been stopped.
+     * Notification message that the connection with the server was lost
+     * unexpectedly. We will try to reestablish the connection for ever until
+     * the connection has been reestablished or this thread has been stopped.
      */
     public void connectionLost() {
         // Ensure that only one thread will try to reconnect.
-        synchronized(this) {
+        synchronized (this) {
             if (reconnecting) {
                 return;
             }
@@ -419,31 +437,34 @@ public class ExternalComponent implements Component {
         readerThread = null;
         boolean isConnected = false;
         if (!shutdown) {
-            // Notify the component that connection was lost so it needs to shutdown. The component is
-            // still registered in the local component manager but just not connected to the server
+            // Notify the component that connection was lost so it needs to
+            // shutdown. The component is
+            // still registered in the local component manager but just not
+            // connected to the server
             component.shutdown();
         }
         while (!isConnected && !shutdown) {
             try {
                 connect(host, port, subdomain);
                 isConnected = true;
-                // It may be possible that while a new connection was being established the
-                // component was required to shutdown so in this case we need to close the new
+                // It may be possible that while a new connection was being
+                // established the
+                // component was required to shutdown so in this case we need to
+                // close the new
                 // connection
                 if (shutdown) {
                     disconnect();
-                }
-                else {
+                } else {
                     // Component is back again working so start it up again
                     start();
                 }
             } catch (ComponentException e) {
-                manager.getLog().error("Error trying to reconnect with the server", e);
+                manager.getLog().error(
+                        "Error trying to reconnect with the server", e);
                 // Wait for 5 seconds until the next retry
                 try {
                     Thread.sleep(5000);
-                }
-                catch (InterruptedException e1) {
+                } catch (InterruptedException e1) {
                     // Do nothing
                 }
             }
@@ -452,19 +473,29 @@ public class ExternalComponent implements Component {
     }
 
     /**
-     * Adds an {@link IQResultListener} that will be invoked when an IQ result is sent to the
-     * server itself and is of type result or error. This is a nice way for the server to
-     * send IQ packets to other XMPP entities and be waked up when a response is received back.<p>
-     *
-     * Once an IQ result was received, the listener will be invoked and removed from
-     * the list of listeners.
-     *
-     * @param id the id of the IQ packet being sent from the server to an XMPP entity.
-     * @param listener the IQResultListener that will be invoked when an answer is received
-     * @param timeoutmillis The amount of milliseconds after which waiting for a response should be stopped.
+     * Adds an {@link IQResultListener} that will be invoked when an IQ result
+     * is sent to the server itself and is of type result or error. This is a
+     * nice way for the server to send IQ packets to other XMPP entities and be
+     * waked up when a response is received back.
+     * <p>
+     * 
+     * Once an IQ result was received, the listener will be invoked and removed
+     * from the list of listeners.
+     * 
+     * @param id
+     *            the id of the IQ packet being sent from the server to an XMPP
+     *            entity.
+     * @param listener
+     *            the IQResultListener that will be invoked when an answer is
+     *            received
+     * @param timeoutmillis
+     *            The amount of milliseconds after which waiting for a response
+     *            should be stopped.
      */
-    void addIQResultListener(String id, IQResultListener listener, long timeoutmillis) {
-        // be generated by the server and simulate like the client sent it. This will let listeners
+    void addIQResultListener(String id, IQResultListener listener,
+            long timeoutmillis) {
+        // be generated by the server and simulate like the client sent it. This
+        // will let listeners
         // react and be removed from the collection
         resultListeners.put(id, listener);
         resultTimeout.put(id, System.currentTimeMillis() + timeoutmillis);
@@ -478,21 +509,20 @@ public class ExternalComponent implements Component {
 
         public void run() {
             synchronized (writer) {
-                // Send heartbeat if no packet has been sent to the server for a given time
+                // Send heartbeat if no packet has been sent to the server for a
+                // given time
                 if (System.currentTimeMillis() - lastActive >= 30000) {
                     try {
                         writer.write(" ");
                         writer.flush();
-                    }
-                    catch (IOException e) {
+                    } catch (IOException e) {
                         // Log the exception
                         manager.getLog().error(e);
                         if (!shutdown) {
                             // Connection was lost so try to reconnect
                             connectionLost();
                         }
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         // Do nothing
                     }
                 }
@@ -501,18 +531,20 @@ public class ExternalComponent implements Component {
     }
 
     /**
-	 * Timer task that will remove Listeners that wait for results to IQ stanzas
-	 * that have timed out. Time out values can be set to each listener
-	 * individually by adjusting the timeout value in the third parameter of
-	 * {@link ExternalComponent#addIQResultListener(String, IQResultListener, long)}.
-	 *
-	 * @author Guus der Kinderen, guus@nimbuzz.com
-	 */
+     * Timer task that will remove Listeners that wait for results to IQ stanzas
+     * that have timed out. Time out values can be set to each listener
+     * individually by adjusting the timeout value in the third parameter of
+     * {@link ExternalComponent#addIQResultListener(String, IQResultListener, long)}
+     * .
+     * 
+     * @author Guus der Kinderen, guus@nimbuzz.com
+     */
     private class TimeoutTask extends TimerTask {
 
         /**
-         * Iterates over and removes all timed out results.<p>
-         *
+         * Iterates over and removes all timed out results.
+         * <p>
+         * 
          * The map that keeps track of timeout values is ordered by timeout
          * date. This way, iteration can be stopped as soon as the first value
          * has been found that didn't timeout yet.
@@ -521,7 +553,8 @@ public class ExternalComponent implements Component {
         public void run() {
             // Use an Iterator to allow changes to the Map that is backing
             // the Iterator.
-            final Iterator<Map.Entry<String, Long>> it = resultTimeout.entrySet().iterator();
+            final Iterator<Map.Entry<String, Long>> it = resultTimeout
+                    .entrySet().iterator();
 
             while (it.hasNext()) {
                 final Map.Entry<String, Long> pointer = it.next();
@@ -534,7 +567,8 @@ public class ExternalComponent implements Component {
                 final String packetId = pointer.getKey();
 
                 // remove this listener from the list
-                final IQResultListener listener = resultListeners.remove(packetId);
+                final IQResultListener listener = resultListeners
+                        .remove(packetId);
                 if (listener != null) {
                     // notify listener of the timeout.
                     listener.answerTimeout(packetId);
@@ -545,5 +579,5 @@ public class ExternalComponent implements Component {
                 it.remove();
             }
         }
-	}
+    }
 }

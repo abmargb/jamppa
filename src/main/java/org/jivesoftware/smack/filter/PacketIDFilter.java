@@ -21,7 +21,7 @@ import org.xmpp.packet.Packet;
 
 /**
  * Filters for packets with a particular packet ID.
- *
+ * 
  * @author Matt Tucker
  */
 public class PacketIDFilter implements PacketFilter {
@@ -30,8 +30,9 @@ public class PacketIDFilter implements PacketFilter {
 
     /**
      * Creates a new packet ID filter using the specified packet ID.
-     *
-     * @param packetID the packet ID to filter for.
+     * 
+     * @param packetID
+     *            the packet ID to filter for.
      */
     public PacketIDFilter(String packetID) {
         if (packetID == null) {

@@ -18,14 +18,17 @@ package org.jivesoftware.smack.util.dns;
 import java.util.List;
 
 /**
- * Implementations of this interface define a class that is capable of resolving DNS addresses.
- *
+ * Implementations of this interface define a class that is capable of resolving
+ * DNS addresses.
+ * 
  */
 public interface DNSResolver {
 
     /**
      * Gets a list of service records for the specified service.
-     * @param name The symbolic name of the service.
+     * 
+     * @param name
+     *            The symbolic name of the service.
      * @return The list of SRV records mapped to the service name.
      */
     List<SRVRecord> lookupSRVRecords(String name);

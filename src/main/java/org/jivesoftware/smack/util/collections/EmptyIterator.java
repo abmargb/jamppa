@@ -21,33 +21,34 @@ import java.util.Iterator;
 /**
  * Provides an implementation of an empty iterator.
  * <p/>
- * This class provides an implementation of an empty iterator.
- * This class provides for binary compatability between Commons Collections
- * 2.1.1 and 3.1 due to issues with <code>IteratorUtils</code>.
- *
+ * This class provides an implementation of an empty iterator. This class
+ * provides for binary compatability between Commons Collections 2.1.1 and 3.1
+ * due to issues with <code>IteratorUtils</code>.
+ * 
  * @author Matt Hall, John Watkinson, Stephen Colebourne
  * @version $Revision: 1.1 $ $Date: 2005/10/11 17:05:24 $
  * @since Commons Collections 2.1.1 and 3.1
  */
-public class EmptyIterator <E> extends AbstractEmptyIterator<E> implements ResettableIterator<E> {
+public class EmptyIterator<E> extends AbstractEmptyIterator<E> implements
+        ResettableIterator<E> {
 
     /**
      * Singleton instance of the iterator.
-     *
+     * 
      * @since Commons Collections 3.1
      */
     public static final ResettableIterator RESETTABLE_INSTANCE = new EmptyIterator();
     /**
      * Singleton instance of the iterator.
-     *
+     * 
      * @since Commons Collections 2.1.1 and 3.1
      */
     public static final Iterator INSTANCE = RESETTABLE_INSTANCE;
 
-	public static <T> Iterator<T> getInstance() {
-		return INSTANCE;
-	}
-	
+    public static <T> Iterator<T> getInstance() {
+        return INSTANCE;
+    }
+
     /**
      * Constructor.
      */

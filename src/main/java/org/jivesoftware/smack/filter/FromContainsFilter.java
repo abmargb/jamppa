@@ -21,7 +21,7 @@ import org.xmpp.packet.Packet;
 
 /**
  * Filters for packets where the "from" field contains a specified value.
- *
+ * 
  * @author Matt Tucker
  */
 public class FromContainsFilter implements PacketFilter {
@@ -30,8 +30,9 @@ public class FromContainsFilter implements PacketFilter {
 
     /**
      * Creates a "from" contains filter using the "from" field part.
-     *
-     * @param from the from field value the packet must contain.
+     * 
+     * @param from
+     *            the from field value the packet must contain.
      */
     public FromContainsFilter(String from) {
         if (from == null) {
@@ -43,8 +44,7 @@ public class FromContainsFilter implements PacketFilter {
     public boolean accept(Packet packet) {
         if (packet.getFrom() == null) {
             return false;
-        }
-        else {
+        } else {
             return packet.getFrom().toFullJID().toLowerCase().indexOf(from) != -1;
         }
     }

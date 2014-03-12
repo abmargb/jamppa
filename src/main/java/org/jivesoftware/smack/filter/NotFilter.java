@@ -20,9 +20,9 @@ package org.jivesoftware.smack.filter;
 import org.xmpp.packet.Packet;
 
 /**
- * Implements the logical NOT operation on a packet filter. In other words, packets
- * pass this filter if they do not pass the supplied filter.
- *
+ * Implements the logical NOT operation on a packet filter. In other words,
+ * packets pass this filter if they do not pass the supplied filter.
+ * 
  * @author Matt Tucker
  */
 public class NotFilter implements PacketFilter {
@@ -31,8 +31,9 @@ public class NotFilter implements PacketFilter {
 
     /**
      * Creates a NOT filter using the specified filter.
-     *
-     * @param filter the filter.
+     * 
+     * @param filter
+     *            the filter.
      */
     public NotFilter(PacketFilter filter) {
         if (filter == null) {

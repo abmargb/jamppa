@@ -17,13 +17,13 @@ package org.jamppa.component.model;
 
 /**
  * @author Abmar
- *
+ * 
  */
 public interface Identifiable {
 
-	/**
+    /**
 	 * 
 	 */
-	String getId();
-	
+    String getId();
+
 }

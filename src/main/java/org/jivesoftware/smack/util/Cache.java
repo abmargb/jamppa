@@ -29,30 +29,32 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.jivesoftware.smack.util.collections.AbstractMapEntry;
 
-
 /**
- * A specialized Map that is size-limited (using an LRU algorithm) and
- * has an optional expiration time for cache items. The Map is thread-safe.<p>
- *
+ * A specialized Map that is size-limited (using an LRU algorithm) and has an
+ * optional expiration time for cache items. The Map is thread-safe.
+ * <p>
+ * 
  * The algorithm for cache is as follows: a HashMap is maintained for fast
  * object lookup. Two linked lists are maintained: one keeps objects in the
- * order they are accessed from cache, the other keeps objects in the order
- * they were originally added to cache. When objects are added to cache, they
- * are first wrapped by a CacheObject which maintains the following pieces
- * of information:<ul>
- * <li> A pointer to the node in the linked list that maintains accessed
- * order for the object. Keeping a reference to the node lets us avoid
- * linear scans of the linked list.
- * <li> A pointer to the node in the linked list that maintains the age
- * of the object in cache. Keeping a reference to the node lets us avoid
- * linear scans of the linked list.</ul>
+ * order they are accessed from cache, the other keeps objects in the order they
+ * were originally added to cache. When objects are added to cache, they are
+ * first wrapped by a CacheObject which maintains the following pieces of
+ * information:
+ * <ul>
+ * <li>A pointer to the node in the linked list that maintains accessed order
+ * for the object. Keeping a reference to the node lets us avoid linear scans of
+ * the linked list.
+ * <li>A pointer to the node in the linked list that maintains the age of the
+ * object in cache. Keeping a reference to the node lets us avoid linear scans
+ * of the linked list.
+ * </ul>
  * <p/>
- * To get an object from cache, a hash lookup is performed to get a reference
- * to the CacheObject that wraps the real object we are looking for.
- * The object is subsequently moved to the front of the accessed linked list
- * and any necessary cache cleanups are performed. Cache deletion and expiration
- * is performed as needed.
- *
+ * To get an object from cache, a hash lookup is performed to get a reference to
+ * the CacheObject that wraps the real object we are looking for. The object is
+ * subsequently moved to the front of the accessed linked list and any necessary
+ * cache cleanups are performed. Cache deletion and expiration is performed as
+ * needed.
+ * 
  * @author Matt Tucker
  */
 public class Cache<K, V> implements Map<K, V> {
@@ -63,14 +65,14 @@ public class Cache<K, V> implements Map<K, V> {
     protected Map<K, CacheObject<V>> map;
 
     /**
-     * Linked list to maintain order that cache objects are accessed
-     * in, most used to least used.
+     * Linked list to maintain order that cache objects are accessed in, most
+     * used to least used.
      */
     protected LinkedList lastAccessedList;
 
     /**
-     * Linked list to maintain time that cache objects were initially added
-     * to the cache, most recently added to oldest added.
+     * Linked list to maintain time that cache objects were initially added to
+     * the cache, most recently added to oldest added.
      */
     protected LinkedList ageList;
 
@@ -87,21 +89,24 @@ public class Cache<K, V> implements Map<K, V> {
     /**
      * Maintain the number of cache hits and misses. A cache hit occurs every
      * time the get method is called and the cache contains the requested
-     * object. A cache miss represents the opposite occurence.<p>
-     *
-     * Keeping track of cache hits and misses lets one measure how efficient
-     * the cache is; the higher the percentage of hits, the more efficient.
+     * object. A cache miss represents the opposite occurence.
+     * <p>
+     * 
+     * Keeping track of cache hits and misses lets one measure how efficient the
+     * cache is; the higher the percentage of hits, the more efficient.
      */
     protected long cacheHits, cacheMisses = 0L;
 
     /**
      * Create a new cache and specify the maximum size of for the cache in
      * bytes, and the maximum lifetime of objects.
-     *
-     * @param maxSize the maximum number of objects the cache will hold. -1
-     *      means the cache has no max size.
-     * @param maxLifetime the maximum amount of time (in ms) objects can exist in
-     *      cache before being deleted. -1 means objects never expire.
+     * 
+     * @param maxSize
+     *            the maximum number of objects the cache will hold. -1 means
+     *            the cache has no max size.
+     * @param maxLifetime
+     *            the maximum amount of time (in ms) objects can exist in cache
+     *            before being deleted. -1 means objects never expire.
      */
     public Cache(int maxSize, long maxLifetime) {
         if (maxSize == 0) {
@@ -136,7 +141,8 @@ public class Cache<K, V> implements Map<K, V> {
         ageNode.timestamp = System.currentTimeMillis();
         cacheObject.ageListNode = ageNode;
 
-        // If cache is too full, remove least used cache entries until it is not too full.
+        // If cache is too full, remove least used cache entries until it is not
+        // too full.
         cullCache();
 
         return oldValue;
@@ -175,8 +181,8 @@ public class Cache<K, V> implements Map<K, V> {
      * caused by cache internal processing such as eviction or loading
      */
     public synchronized V remove(Object key, boolean internal) {
-        //noinspection SuspiciousMethodCalls
-        CacheObject<V> cacheObject =  map.remove(key);
+        // noinspection SuspiciousMethodCalls
+        CacheObject<V> cacheObject = map.remove(key);
         // If the object is not in cache, stop trying to remove it.
         if (cacheObject == null) {
             return null;
@@ -229,6 +235,7 @@ public class Cache<K, V> implements Map<K, V> {
 
         return Collections.unmodifiableCollection(new AbstractCollection<V>() {
             Collection<CacheObject<V>> values = map.values();
+
             public Iterator<V> iterator() {
                 return new Iterator<V>() {
                     Iterator<CacheObject<V>> it = values.iterator();
@@ -268,7 +275,7 @@ public class Cache<K, V> implements Map<K, V> {
             // entry values will be CacheObject instances that need
             // to be converted to the normal object form.
             if (value instanceof CacheObject) {
-                //noinspection unchecked
+                // noinspection unchecked
                 value = ((CacheObject<V>) value).object;
             }
             put(entry.getKey(), value);
@@ -280,7 +287,7 @@ public class Cache<K, V> implements Map<K, V> {
         // maximum defined age.
         deleteExpiredEntries();
 
-        //noinspection unchecked
+        // noinspection unchecked
         CacheObject<V> cacheObject = new CacheObject<V>((V) value);
 
         return map.containsValue(cacheObject);
@@ -295,21 +302,26 @@ public class Cache<K, V> implements Map<K, V> {
         deleteExpiredEntries();
 
         return new AbstractSet<Map.Entry<K, V>>() {
-            private final Set<Map.Entry<K, CacheObject<V>>> set = map.entrySet();
+            private final Set<Map.Entry<K, CacheObject<V>>> set = map
+                    .entrySet();
 
             public Iterator<Entry<K, V>> iterator() {
                 return new Iterator<Entry<K, V>>() {
-                    private final Iterator<Entry<K, CacheObject<V>>> it = set.iterator();
+                    private final Iterator<Entry<K, CacheObject<V>>> it = set
+                            .iterator();
+
                     public boolean hasNext() {
                         return it.hasNext();
                     }
 
                     public Entry<K, V> next() {
                         Map.Entry<K, CacheObject<V>> entry = it.next();
-                        return new AbstractMapEntry<K, V>(entry.getKey(), entry.getValue().object) {
+                        return new AbstractMapEntry<K, V>(entry.getKey(),
+                                entry.getValue().object) {
                             @Override
                             public V setValue(V value) {
-                                throw new UnsupportedOperationException("Cannot set");
+                                throw new UnsupportedOperationException(
+                                        "Cannot set");
                             }
                         };
                     }
@@ -389,7 +401,8 @@ public class Cache<K, V> implements Map<K, V> {
 
         while (expireTime > node.timestamp) {
             if (remove(node.object, true) == null) {
-                log.warn("Error attempting to remove(" + node.object.toString() + ") - cacheObject not found in cache!");
+                log.warn("Error attempting to remove(" + node.object.toString()
+                        + ") - cacheObject not found in cache!");
                 // remove from the ageList
                 node.remove();
             }
@@ -404,8 +417,9 @@ public class Cache<K, V> implements Map<K, V> {
     }
 
     /**
-     * Removes the least recently used elements if the cache size is greater than
-     * or equal to the maximum allowed size until the cache is at least 10% empty.
+     * Removes the least recently used elements if the cache size is greater
+     * than or equal to the maximum allowed size until the cache is at least 10%
+     * empty.
      */
     protected synchronized void cullCache() {
         // Check if a max cache size is defined.
@@ -413,17 +427,21 @@ public class Cache<K, V> implements Map<K, V> {
             return;
         }
 
-        // See if the cache is too big. If so, clean out cache until it's 10% free.
+        // See if the cache is too big. If so, clean out cache until it's 10%
+        // free.
         if (map.size() > maxCacheSize) {
             // First, delete any old entries to see how much memory that frees.
             deleteExpiredEntries();
-            // Next, delete the least recently used elements until 10% of the cache
+            // Next, delete the least recently used elements until 10% of the
+            // cache
             // has been freed.
             int desiredSize = (int) (maxCacheSize * .90);
-            for (int i=map.size(); i>desiredSize; i--) {
+            for (int i = map.size(); i > desiredSize; i--) {
                 // Get the key and invoke the remove method on it.
                 if (remove(lastAccessedList.getLast().object, true) == null) {
-                    log.warn("Error attempting to cullCache with remove(" + lastAccessedList.getLast().object.toString() + ") - cacheObject not found in cache!");
+                    log.warn("Error attempting to cullCache with remove("
+                            + lastAccessedList.getLast().object.toString()
+                            + ") - cacheObject not found in cache!");
                     lastAccessedList.getLast().remove();
                 }
             }
@@ -431,24 +449,25 @@ public class Cache<K, V> implements Map<K, V> {
     }
 
     /**
-     * Wrapper for all objects put into cache. It's primary purpose is to maintain
-     * references to the linked lists that maintain the creation time of the object
-     * and the ordering of the most used objects.
-     *
-     * This class is optimized for speed rather than strictly correct encapsulation.
+     * Wrapper for all objects put into cache. It's primary purpose is to
+     * maintain references to the linked lists that maintain the creation time
+     * of the object and the ordering of the most used objects.
+     * 
+     * This class is optimized for speed rather than strictly correct
+     * encapsulation.
      */
     private static class CacheObject<V> {
 
-       /**
-        * Underlying object wrapped by the CacheObject.
-        */
+        /**
+         * Underlying object wrapped by the CacheObject.
+         */
         public V object;
 
         /**
-         * A reference to the node in the cache order list. We keep the reference
-         * here to avoid linear scans of the list. Every time the object is
-         * accessed, the node is removed from its current spot in the list and
-         * moved to the front.
+         * A reference to the node in the cache order list. We keep the
+         * reference here to avoid linear scans of the list. Every time the
+         * object is accessed, the node is removed from its current spot in the
+         * list and moved to the front.
          */
         public LinkedListNode lastAccessedListNode;
 
@@ -466,8 +485,9 @@ public class Cache<K, V> implements Map<K, V> {
 
         /**
          * Creates a new cache object wrapper.
-         *
-         * @param object the underlying Object to wrap.
+         * 
+         * @param object
+         *            the underlying Object to wrap.
          */
         public CacheObject(V object) {
             this.object = object;
@@ -493,9 +513,10 @@ public class Cache<K, V> implements Map<K, V> {
     }
 
     /**
-     * Simple LinkedList implementation. The main feature is that list nodes
-     * are public, which allows very fast delete operations when one has a
-     * reference to the node that is to be deleted.<p>
+     * Simple LinkedList implementation. The main feature is that list nodes are
+     * public, which allows very fast delete operations when one has a reference
+     * to the node that is to be deleted.
+     * <p>
      */
     private static class LinkedList {
 
@@ -514,7 +535,7 @@ public class Cache<K, V> implements Map<K, V> {
 
         /**
          * Returns the first linked list node in the list.
-         *
+         * 
          * @return the first element of the list.
          */
         public LinkedListNode getFirst() {
@@ -527,7 +548,7 @@ public class Cache<K, V> implements Map<K, V> {
 
         /**
          * Returns the last linked list node in the list.
-         *
+         * 
          * @return the last element of the list.
          */
         public LinkedListNode getLast() {
@@ -540,8 +561,9 @@ public class Cache<K, V> implements Map<K, V> {
 
         /**
          * Adds a node to the beginning of the list.
-         *
-         * @param node the node to add to the beginning of the list.
+         * 
+         * @param node
+         *            the node to add to the beginning of the list.
          * @return the node
          */
         public LinkedListNode addFirst(LinkedListNode node) {
@@ -553,10 +575,11 @@ public class Cache<K, V> implements Map<K, V> {
         }
 
         /**
-         * Adds an object to the beginning of the list by automatically creating a
-         * a new node and adding it to the beginning of the list.
-         *
-         * @param object the object to add to the beginning of the list.
+         * Adds an object to the beginning of the list by automatically creating
+         * a a new node and adding it to the beginning of the list.
+         * 
+         * @param object
+         *            the object to add to the beginning of the list.
          * @return the node created to wrap the object.
          */
         public LinkedListNode addFirst(Object object) {
@@ -567,14 +590,16 @@ public class Cache<K, V> implements Map<K, V> {
         }
 
         /**
-         * Adds an object to the end of the list by automatically creating a
-         * a new node and adding it to the end of the list.
-         *
-         * @param object the object to add to the end of the list.
+         * Adds an object to the end of the list by automatically creating a a
+         * new node and adding it to the end of the list.
+         * 
+         * @param object
+         *            the object to add to the end of the list.
          * @return the node created to wrap the object.
          */
         public LinkedListNode addLast(Object object) {
-            LinkedListNode node = new LinkedListNode(object, head, head.previous);
+            LinkedListNode node = new LinkedListNode(object, head,
+                    head.previous);
             node.previous.next = node;
             node.next.previous = node;
             return node;
@@ -584,21 +609,21 @@ public class Cache<K, V> implements Map<K, V> {
          * Erases all elements in the list and re-initializes it.
          */
         public void clear() {
-            //Remove all references in the list.
+            // Remove all references in the list.
             LinkedListNode node = getLast();
             while (node != null) {
                 node.remove();
                 node = getLast();
             }
 
-            //Re-initialize.
+            // Re-initialize.
             head.next = head.previous = head;
         }
 
         /**
          * Returns a String representation of the linked list with a comma
          * delimited list of all the elements in the list.
-         *
+         * 
          * @return a String representation of the LinkedList.
          */
         public String toString() {
@@ -613,19 +638,19 @@ public class Cache<K, V> implements Map<K, V> {
     }
 
     /**
-     * Doubly linked node in a LinkedList. Most LinkedList implementations keep the
-     * equivalent of this class private. We make it public so that references
-     * to each node in the list can be maintained externally.
-     *
+     * Doubly linked node in a LinkedList. Most LinkedList implementations keep
+     * the equivalent of this class private. We make it public so that
+     * references to each node in the list can be maintained externally.
+     * 
      * Exposing this class lets us make remove operations very fast. Remove is
      * built into this class and only requires two reference reassignments. If
      * remove existed in the main LinkedList class, a linear scan would have to
      * be performed to find the correct node to delete.
-     *
+     * 
      * The linked list implementation was specifically written for the Jive
      * cache system. While it can be used as a general purpose linked list, for
-     * most applications, it is more suitable to use the linked list that is part
-     * of the Java Collections package.
+     * most applications, it is more suitable to use the linked list that is
+     * part of the Java Collections package.
      */
     private static class LinkedListNode {
 
@@ -637,25 +662,27 @@ public class Cache<K, V> implements Map<K, V> {
          * This class is further customized for the Jive cache system. It
          * maintains a timestamp of when a Cacheable object was first added to
          * cache. Timestamps are stored as long values and represent the number
-         * of milliseconds passed since January 1, 1970 00:00:00.000 GMT.<p>
-         *
+         * of milliseconds passed since January 1, 1970 00:00:00.000 GMT.
+         * <p>
+         * 
          * The creation timestamp is used in the case that the cache has a
-         * maximum lifetime set. In that case, when
-         * [current time] - [creation time] > [max lifetime], the object will be
-         * deleted from cache.
+         * maximum lifetime set. In that case, when [current time] - [creation
+         * time] > [max lifetime], the object will be deleted from cache.
          */
         public long timestamp;
 
         /**
          * Constructs a new linked list node.
-         *
-         * @param object the Object that the node represents.
-         * @param next a reference to the next LinkedListNode in the list.
-         * @param previous a reference to the previous LinkedListNode in the list.
+         * 
+         * @param object
+         *            the Object that the node represents.
+         * @param next
+         *            a reference to the next LinkedListNode in the list.
+         * @param previous
+         *            a reference to the previous LinkedListNode in the list.
          */
         public LinkedListNode(Object object, LinkedListNode next,
-                LinkedListNode previous)
-        {
+                LinkedListNode previous) {
             this.object = object;
             this.next = next;
             this.previous = previous;
@@ -670,9 +697,9 @@ public class Cache<K, V> implements Map<K, V> {
         }
 
         /**
-         * Returns a String representation of the linked list node by calling the
-         * toString method of the node's object.
-         *
+         * Returns a String representation of the linked list node by calling
+         * the toString method of the node's object.
+         * 
          * @return a String representation of the LinkedListNode.
          */
         public String toString() {

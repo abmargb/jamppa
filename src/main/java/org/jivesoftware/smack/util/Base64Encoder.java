@@ -14,9 +14,9 @@
 
 package org.jivesoftware.smack.util;
 
-
 /**
  * A Base 64 encoding implementation.
+ * 
  * @author Florian Schmaus
  */
 public class Base64Encoder implements StringEncoder {

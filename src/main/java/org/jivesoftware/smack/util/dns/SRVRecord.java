@@ -16,24 +16,30 @@
 package org.jivesoftware.smack.util.dns;
 
 /**
- * @see <a href="http://tools.ietf.org/html/rfc2782>RFC 2782: A DNS RR for specifying the location of services (DNS
- * SRV)<a>
+ * @see <a href="http://tools.ietf.org/html/rfc2782>RFC 2782: A DNS RR for
+ *      specifying the location of services (DNS SRV)<a>
  * @author Florian Schmaus
  * 
  */
 public class SRVRecord extends HostAddress implements Comparable<SRVRecord> {
-    
+
     private int weight;
     private int priority;
-    
+
     /**
      * Create a new SRVRecord
      * 
-     * @param fqdn Fully qualified domain name
-     * @param port The connection port
-     * @param priority Priority of the target host
-     * @param weight Relative weight for records with same priority
-     * @throws IllegalArgumentException fqdn is null or any other field is not in valid range (0-65535).
+     * @param fqdn
+     *            Fully qualified domain name
+     * @param port
+     *            The connection port
+     * @param priority
+     *            Priority of the target host
+     * @param weight
+     *            Relative weight for records with same priority
+     * @throws IllegalArgumentException
+     *             fqdn is null or any other field is not in valid range
+     *             (0-65535).
      */
     public SRVRecord(String fqdn, int port, int priority, int weight) {
         super(fqdn, port);
@@ -51,11 +57,11 @@ public class SRVRecord extends HostAddress implements Comparable<SRVRecord> {
         this.weight = weight;
 
     }
-    
+
     public int getPriority() {
         return priority;
     }
-    
+
     public int getWeight() {
         return weight;
     }
@@ -64,7 +70,8 @@ public class SRVRecord extends HostAddress implements Comparable<SRVRecord> {
     public int compareTo(SRVRecord other) {
         // According to RFC2782,
         // "[a] client MUST attempt to contact the target host with the lowest-numbered priority it can reach".
-        // This means that a SRV record with a higher priority is 'less' then one with a lower.
+        // This means that a SRV record with a higher priority is 'less' then
+        // one with a lower.
         int res = other.priority - this.priority;
         if (res == 0) {
             res = this.weight - other.weight;

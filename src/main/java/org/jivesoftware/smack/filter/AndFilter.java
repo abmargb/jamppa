@@ -23,9 +23,9 @@ import java.util.List;
 import org.xmpp.packet.Packet;
 
 /**
- * Implements the logical AND operation over two or more packet filters.
- * In other words, packets pass this filter if they pass <b>all</b> of the filters.
- *
+ * Implements the logical AND operation over two or more packet filters. In
+ * other words, packets pass this filter if they pass <b>all</b> of the filters.
+ * 
  * @author Matt Tucker
  */
 public class AndFilter implements PacketFilter {
@@ -45,15 +45,16 @@ public class AndFilter implements PacketFilter {
 
     /**
      * Creates an AND filter using the specified filters.
-     *
-     * @param filters the filters to add.
+     * 
+     * @param filters
+     *            the filters to add.
      */
     public AndFilter(PacketFilter... filters) {
         if (filters == null) {
             throw new IllegalArgumentException("Parameter cannot be null.");
         }
-        for(PacketFilter filter : filters) {
-            if(filter == null) {
+        for (PacketFilter filter : filters) {
+            if (filter == null) {
                 throw new IllegalArgumentException("Parameter cannot be null.");
             }
             this.filters.add(filter);
@@ -61,10 +62,11 @@ public class AndFilter implements PacketFilter {
     }
 
     /**
-     * Adds a filter to the filter list for the AND operation. A packet
-     * will pass the filter if all of the filters in the list accept it.
-     *
-     * @param filter a filter to add to the filter list.
+     * Adds a filter to the filter list for the AND operation. A packet will
+     * pass the filter if all of the filters in the list accept it.
+     * 
+     * @param filter
+     *            a filter to add to the filter list.
      */
     public void addFilter(PacketFilter filter) {
         if (filter == null) {

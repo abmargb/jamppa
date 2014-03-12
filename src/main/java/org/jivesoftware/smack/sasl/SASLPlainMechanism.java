@@ -19,7 +19,7 @@ import org.jivesoftware.smack.SASLAuthentication;
 
 /**
  * Implementation of the SASL PLAIN mechanism
- *
+ * 
  * @author Jay Kline
  */
 public class SASLPlainMechanism extends SASLMechanism {

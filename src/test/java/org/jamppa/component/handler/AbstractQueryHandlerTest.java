@@ -5,14 +5,14 @@ import org.xmpp.packet.IQ;
 
 public class AbstractQueryHandlerTest {
 
-	@Test(expected=IllegalArgumentException.class)
-	public void testConstructorNullNamespace() {
-		new AbstractQueryHandler(null) {
-			@Override
-			public IQ handle(IQ query) {
-				return null;
-			}
-		};
-	}
-	
+    @Test(expected = IllegalArgumentException.class)
+    public void testConstructorNullNamespace() {
+        new AbstractQueryHandler(null) {
+            @Override
+            public IQ handle(IQ query) {
+                return null;
+            }
+        };
+    }
+
 }

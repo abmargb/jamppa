@@ -23,17 +23,18 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.Type;
 
 /**
- * This implementation uses the <a href="http://www.dnsjava.org/">dnsjava</a> implementation for resolving DNS addresses.
- *
+ * This implementation uses the <a href="http://www.dnsjava.org/">dnsjava</a>
+ * implementation for resolving DNS addresses.
+ * 
  */
 public class DNSJavaResolver implements DNSResolver {
-    
+
     private static DNSJavaResolver instance = new DNSJavaResolver();
-    
+
     private DNSJavaResolver() {
-        
+
     }
-    
+
     public static DNSResolver getInstance() {
         return instance;
     }

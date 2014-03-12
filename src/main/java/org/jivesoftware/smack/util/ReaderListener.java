@@ -20,7 +20,7 @@ package org.jivesoftware.smack.util;
 /**
  * Interface that allows for implementing classes to listen for string reading
  * events. Listeners are registered with ObservableReader objects.
- *
+ * 
  * @see ObservableReader#addReaderListener
  * @see ObservableReader#removeReaderListener
  * 
@@ -31,8 +31,9 @@ public interface ReaderListener {
     /**
      * Notification that the Reader has read a new string.
      * 
-     * @param str the read String
+     * @param str
+     *            the read String
      */
     public abstract void read(String str);
-    
+
 }

@@ -28,20 +28,22 @@ import javax.naming.directory.InitialDirContext;
 import org.jivesoftware.smack.util.DNSUtil;
 
 /**
- * A DNS resolver (mostly for SRV records), which makes use of the API provided in the javax.* namespace.
+ * A DNS resolver (mostly for SRV records), which makes use of the API provided
+ * in the javax.* namespace.
  * 
  * @author Florian Schmaus
- *
+ * 
  */
 public class JavaxResolver implements DNSResolver {
-    
+
     private static JavaxResolver instance;
     private static DirContext dirContext;
-    
+
     static {
         try {
             Hashtable<String, String> env = new Hashtable<String, String>();
-            env.put("java.naming.factory.initial", "com.sun.jndi.dns.DnsContextFactory");
+            env.put("java.naming.factory.initial",
+                    "com.sun.jndi.dns.DnsContextFactory");
             dirContext = new InitialDirContext(env);
         } catch (Exception e) {
             // Ignore.
@@ -50,18 +52,18 @@ public class JavaxResolver implements DNSResolver {
         // Try to set this DNS resolver as primary one
         DNSUtil.setDNSResolver(getInstance());
     }
-    
+
     private JavaxResolver() {
-        
+
     }
-    
+
     public static DNSResolver getInstance() {
         if (instance == null && isSupported()) {
             instance = new JavaxResolver();
         }
         return instance;
     }
-    
+
     public static boolean isSupported() {
         return dirContext != null;
     }
@@ -69,18 +71,23 @@ public class JavaxResolver implements DNSResolver {
     @Override
     public List<SRVRecord> lookupSRVRecords(String name) {
         List<SRVRecord> res = new ArrayList<SRVRecord>();
-        
+
         try {
-            Attributes dnsLookup = dirContext.getAttributes(name, new String[]{"SRV"});
+            Attributes dnsLookup = dirContext.getAttributes(name,
+                    new String[] { "SRV" });
             Attribute srvAttribute = dnsLookup.get("SRV");
             @SuppressWarnings("unchecked")
-            NamingEnumeration<String> srvRecords = (NamingEnumeration<String>) srvAttribute.getAll();
+            NamingEnumeration<String> srvRecords = (NamingEnumeration<String>) srvAttribute
+                    .getAll();
             while (srvRecords.hasMore()) {
                 String srvRecordString = srvRecords.next();
                 String[] srvRecordEntries = srvRecordString.split(" ");
-                int priority = Integer.parseInt(srvRecordEntries[srvRecordEntries.length - 4]);
-                int port = Integer.parseInt(srvRecordEntries[srvRecordEntries.length - 2]);
-                int weight = Integer.parseInt(srvRecordEntries[srvRecordEntries.length - 3]);
+                int priority = Integer
+                        .parseInt(srvRecordEntries[srvRecordEntries.length - 4]);
+                int port = Integer
+                        .parseInt(srvRecordEntries[srvRecordEntries.length - 2]);
+                int weight = Integer
+                        .parseInt(srvRecordEntries[srvRecordEntries.length - 3]);
                 String host = srvRecordEntries[srvRecordEntries.length - 1];
 
                 SRVRecord srvRecord;
@@ -92,7 +99,7 @@ public class JavaxResolver implements DNSResolver {
                 res.add(srvRecord);
             }
         } catch (Exception e) {
-            
+
         }
         return res;
     }

@@ -20,16 +20,19 @@ package org.jivesoftware.smack.packet;
 import org.xmpp.packet.IQ;
 
 /**
- * IQ packet that will be sent to the server to establish a session.<p>
- *
- * If a server supports sessions, it MUST include a <i>session</i> element in the
- * stream features it advertises to a client after the completion of stream authentication.
- * Upon being informed that session establishment is required by the server the client MUST
- * establish a session if it desires to engage in instant messaging and presence functionality.<p>
- *
- * For more information refer to the following
- * <a href=http://www.xmpp.org/specs/rfc3921.html#session>link</a>.
- *
+ * IQ packet that will be sent to the server to establish a session.
+ * <p>
+ * 
+ * If a server supports sessions, it MUST include a <i>session</i> element in
+ * the stream features it advertises to a client after the completion of stream
+ * authentication. Upon being informed that session establishment is required by
+ * the server the client MUST establish a session if it desires to engage in
+ * instant messaging and presence functionality.
+ * <p>
+ * 
+ * For more information refer to the following <a
+ * href=http://www.xmpp.org/specs/rfc3921.html#session>link</a>.
+ * 
  * @author Gaston Dombiak
  */
 public class Session extends IQ {
@@ -38,5 +41,5 @@ public class Session extends IQ {
         setType(IQ.Type.set);
         element.addElement("session", "urn:ietf:params:xml:ns:xmpp-session");
     }
-    
+
 }

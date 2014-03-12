@@ -20,7 +20,7 @@ import org.jivesoftware.smack.SASLAuthentication;
 
 /**
  * Implementation of the SASL DIGEST-MD5 mechanism
- *
+ * 
  * @author Jay Kline
  */
 public class SASLDigestMD5Mechanism extends SASLMechanism {

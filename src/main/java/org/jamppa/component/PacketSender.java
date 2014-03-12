@@ -19,11 +19,11 @@ import org.xmpp.packet.Packet;
 
 /**
  * @author Abmar
- *
+ * 
  */
 public interface PacketSender {
 
-	void sendPacket(Packet packet);
-	
-	Packet syncSendPacket(Packet packet);
+    void sendPacket(Packet packet);
+
+    Packet syncSendPacket(Packet packet);
 }

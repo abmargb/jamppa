@@ -19,50 +19,51 @@ import org.apache.log4j.Logger;
 import org.jamppa.component.PacketSender;
 
 /**
- * Generic QueryHandler. 
- * QueryHandler implementations should extend this class.
+ * Generic QueryHandler. QueryHandler implementations should extend this class.
  * 
  * @see QueryHandler
- *  
+ * 
  */
 public abstract class AbstractQueryHandler implements QueryHandler {
 
-	private final String namespace;
-	private final Logger logger;
-	private PacketSender packetSender;
-	
-	/**
-	 * Creates a QueryHandler for a given namespace 
-	 * @param namespace
-	 */
-	public AbstractQueryHandler(String namespace) {
-		if (namespace == null) {
-			throw new IllegalArgumentException("Namespace cannot be null");
-		}
-		this.namespace = namespace;
-		this.logger = Logger.getLogger(getClass());
-	}
-	
-	@Override
-	public String getNamespace() {
-		return namespace;
-	}
-	
-	protected Logger getLogger() {
-		return logger;
-	}
-	
-	/**
-	 * @return the packetSender
-	 */
-	public PacketSender getPacketSender() {
-		return packetSender;
-	}
-	
-	/**
-	 * @param packetSender the packetSender to set
-	 */
-	public void setPacketSender(PacketSender packetSender) {
-		this.packetSender = packetSender;
-	}
+    private final String namespace;
+    private final Logger logger;
+    private PacketSender packetSender;
+
+    /**
+     * Creates a QueryHandler for a given namespace
+     * 
+     * @param namespace
+     */
+    public AbstractQueryHandler(String namespace) {
+        if (namespace == null) {
+            throw new IllegalArgumentException("Namespace cannot be null");
+        }
+        this.namespace = namespace;
+        this.logger = Logger.getLogger(getClass());
+    }
+
+    @Override
+    public String getNamespace() {
+        return namespace;
+    }
+
+    protected Logger getLogger() {
+        return logger;
+    }
+
+    /**
+     * @return the packetSender
+     */
+    public PacketSender getPacketSender() {
+        return packetSender;
+    }
+
+    /**
+     * @param packetSender
+     *            the packetSender to set
+     */
+    public void setPacketSender(PacketSender packetSender) {
+        this.packetSender = packetSender;
+    }
 }
