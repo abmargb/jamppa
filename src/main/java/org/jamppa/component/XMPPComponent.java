@@ -55,6 +55,8 @@ public class XMPPComponent extends AbstractComponent implements PacketSender  {
 	private String password;
 	private String server;
 	private int port;
+
+	private ExternalComponentManager componentManager;
 	
 	/**
 	 * @param configuration
@@ -181,7 +183,7 @@ public class XMPPComponent extends AbstractComponent implements PacketSender  {
 	public void connect() throws ComponentException {
 		LOGGER.debug("Initializing XMPP component...");
 		
-		ExternalComponentManager componentManager = new ExternalComponentManager(server, port);
+		this.componentManager = new ExternalComponentManager(server, port);
 		componentManager.setSecretKey(jid, password);
 		
 		try {
@@ -192,6 +194,10 @@ public class XMPPComponent extends AbstractComponent implements PacketSender  {
 		}
 		
 		LOGGER.debug("XMPP component initialized.");
+	}
+	
+	public void disconnect() throws ComponentException {
+		componentManager.removeComponent(jid);
 	}
 	
 	/* (non-Javadoc)

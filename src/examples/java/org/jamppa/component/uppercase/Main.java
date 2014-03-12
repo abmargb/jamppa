@@ -8,7 +8,8 @@ import org.xmpp.packet.IQ;
 public class Main {
 
 	public static void main(String[] args) throws ComponentException {
-		UppercaseComponent component = new UppercaseComponent("uppercase.test.com", "password", "localhost", 5347);
+		UppercaseComponent component = new UppercaseComponent("uppercase.test.com", "password", 
+				"localhost", 5347);
 		component.connect();
 		component.process(true);
 	}
