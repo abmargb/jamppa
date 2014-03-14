@@ -495,6 +495,11 @@ public class XMPPConnection extends Connection {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        for (Plugin plugin : plugins) {
+			plugin.shutdown();
+		}
+        
         // In most cases the close() should be successful, so set
         // connected to false here.
         connected = false;

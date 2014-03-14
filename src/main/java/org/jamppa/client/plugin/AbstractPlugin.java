@@ -25,7 +25,16 @@ public abstract class AbstractPlugin implements Plugin {
     protected boolean isSupported() {
         return isSupported;
     }
+    
+    protected void setSupported(boolean isSupported) {
+        this.isSupported = isSupported;
+    }
 
+    @Override
+    public void shutdown() {
+    	isSupported = false;
+    }
+    
     protected abstract boolean supports(Element featuresEl);
 
 }

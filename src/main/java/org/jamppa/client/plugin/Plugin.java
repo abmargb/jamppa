@@ -11,5 +11,7 @@ public interface Plugin {
     public void checkSupport(Element featuresEl);
 
     public Packet parse(Element el);
+    
+    public void shutdown();
 
 }

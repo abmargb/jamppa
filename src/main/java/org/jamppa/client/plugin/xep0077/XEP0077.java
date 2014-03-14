@@ -44,11 +44,19 @@ public class XEP0077 extends AbstractPlugin {
         return null;
     }
 
+    private void checkAccountCreationSupported() throws XMPPException {
+		if (!isSupported()) {
+        	Registration info = getRegistrationInfo();
+            setSupported(!info.getType().equals(IQ.Type.error));
+            if (!isSupported()) {
+            	throw new XMPPException("Server does not support account creation.");
+            }
+        }
+	}
+    
     public void createAccount(String bareJid, String password)
             throws XMPPException {
-        if (!isSupported()) {
-            throw new XMPPException("Server does not support account creation.");
-        }
+        checkAccountCreationSupported();
         Map<String, String> attributes = new HashMap<String, String>();
         for (String attributeName : getAccountAttributes()) {
             attributes.put(attributeName, "");
@@ -58,16 +66,17 @@ public class XEP0077 extends AbstractPlugin {
 
     public void createAccount(String bareJid, String password,
             Map<String, String> attributes) throws XMPPException {
-        if (!isSupported()) {
-            throw new XMPPException("Server does not support account creation.");
-        }
+        checkAccountCreationSupported();
+        
         Registration reg = new Registration();
         reg.setType(IQ.Type.set);
+        
         XMPPConnection connection = getXMPPClient().getConnection();
         reg.setTo(connection.getServiceName());
         attributes.put("username", new JID(bareJid).getNode());
         attributes.put("password", password);
         reg.setAttributes(attributes);
+        
         SyncPacketSend.getReply(connection, reg);
     }
 
