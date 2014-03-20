@@ -34,6 +34,16 @@
 <p>jamppa started as a fork from <a href="https://github.com/igniterealtime/Smack">smack</a> and <a href="http://fisheye.igniterealtime.org/browse/whack/trunk">whack</a>, but it uses <a href="http://fisheye.igniterealtime.org/browse/tinder/trunk">tinder</a>, and consequently DOM, for XML manipulation, which makes the developer's life easier.</p>
 
 <h2>
+<a name="maven-dependency" class="anchor" href="#maven-dependency"><span class="octicon octicon-link"></span></a>Maven dependency</h2>
+
+<div class="highlight highlight-xml"><pre><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.jamppa<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>jamppa<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>0.1.1<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+
+<h2>
 <a name="writing-components" class="anchor" href="#writing-components"><span class="octicon octicon-link"></span></a>Writing components</h2>
 
 <p>A jamppa component uses handlers triggered by namespaces, so that you don't rely on a single method to process all incoming IQs. All components should extend XMPPComponent and then use the addGetHandler() and addSetHandler() methods to include handlers.</p>
@@ -107,6 +117,16 @@
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
-    
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-49241604-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
