@@ -37,7 +37,7 @@ import org.xmpp.packet.Packet;
  * @author Abmar
  * 
  */
-public class XMPPComponent extends AbstractComponent implements PacketSender {
+public class XMPPComponent extends AbstractComponent implements AsyncPacketSender {
 
     private static final Logger LOGGER = Logger.getLogger(XMPPComponent.class);
 
@@ -62,6 +62,7 @@ public class XMPPComponent extends AbstractComponent implements PacketSender {
      * @param configuration
      */
     public XMPPComponent(String jid, String password, String server, int port) {
+    	super(20, 1000, false);
         this.jid = jid;
         this.password = password;
         this.server = server;
@@ -222,11 +223,18 @@ public class XMPPComponent extends AbstractComponent implements PacketSender {
      */
     @Override
     protected void handleIQResult(IQ iq) {
-        PacketCallback callback = packetCallbacks.get(iq.getID() + "@"
-                + iq.getFrom().toBareJID());
+    	String packetCallbackId = iq.getID() + "@"
+                + iq.getFrom().toBareJID();
+		PacketCallback callback = packetCallbacks.get(packetCallbackId);
         if (callback != null) {
             callback.handle(iq);
+            packetCallbacks.remove(packetCallbackId);
         }
+    }
+    
+    @Override
+    protected void handleIQError(IQ iq) {
+    	handleIQResult(iq);
     }
 
     /*
@@ -254,4 +262,10 @@ public class XMPPComponent extends AbstractComponent implements PacketSender {
             packetCallbacks.remove(packet.getID());
         }
     }
+    
+    @Override
+	public void addPacketCallback(Packet packet, PacketCallback packetCallback) {
+		packetCallbacks.put(packet.getID() + "@" + packet.getTo().toBareJID(),
+				packetCallback);
+	}
 }

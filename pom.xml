@@ -3,7 +3,7 @@
   <groupId>org.jamppa</groupId>
   <artifactId>jamppa</artifactId>
   <name>jamppa</name>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <packaging>jar</packaging>
   <description>jamppa is a XMPP client/component library</description>
   <url>https://github.com/abmargb/jamppa</url>
