@@ -43,6 +43,9 @@ public class XMPPComponent extends AbstractComponent implements AsyncPacketSende
 
     private final Map<String, QueryHandler> queryGetHandlers = new HashMap<String, QueryHandler>();
     private final Map<String, QueryHandler> querySetHandlers = new HashMap<String, QueryHandler>();
+    private final long timeOutMilliSeconds;
+
+    private static final long DEFAULT_TIME_OUT_MILLISECONDS = 5000;
 
     private String description;
     private String name;
@@ -58,15 +61,17 @@ public class XMPPComponent extends AbstractComponent implements AsyncPacketSende
 
     private ExternalComponentManager componentManager;
 
-    /**
-     * @param configuration
-     */
-    public XMPPComponent(String jid, String password, String server, int port) {
-    	super(20, 1000, false);
+    public XMPPComponent(String jid, String password, String server, int port, long timeOutMilliSeconds) {
+        super(20, 1000, false);
+        this.timeOutMilliSeconds = timeOutMilliSeconds;
         this.jid = jid;
         this.password = password;
         this.server = server;
         this.port = port;
+    }
+
+    public XMPPComponent(String jid, String password, String server, int port) {
+        this(jid, password, server, port, DEFAULT_TIME_OUT_MILLISECONDS);
     }
 
     public void process() {
@@ -255,7 +260,7 @@ public class XMPPComponent extends AbstractComponent implements AsyncPacketSende
                 });
         send(packet);
         try {
-            return queue.poll(5, TimeUnit.SECONDS);
+            return queue.poll(timeOutMilliSeconds, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } finally {
