@@ -63,6 +63,11 @@ public class XMPPComponent extends AbstractComponent implements AsyncPacketSende
 
     public XMPPComponent(String jid, String password, String server, int port, long timeOutMilliSeconds) {
         super(20, 1000, false);
+
+        if (timeOutMilliSeconds <= 0) {
+            throw new IllegalArgumentException("Timeout must be positive");
+        }
+
         this.timeOutMilliSeconds = timeOutMilliSeconds;
         this.jid = jid;
         this.password = password;
